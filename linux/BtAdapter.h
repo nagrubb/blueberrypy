@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/thread.hpp>
 
 namespace bluez {
 namespace native {
@@ -11,8 +12,12 @@ namespace native {
     bool disableScanning();
 
   private:
+    void processHciData();
+
     int m_hci_device;
     int m_id;
+    bool m_active;
+    boost::thread* m_reader_thread;
   };
 } //native
 } //bluez
