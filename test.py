@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import time
 from blueberrypy import *
 
@@ -12,4 +14,4 @@ events = BtAdapterEvents()
 btAdapter = BtAdapter(0, events)
 fSuccess = btAdapter.enableScanning()
 print fSuccess
-import time.sleep(1000) 
+time.sleep(5) 
