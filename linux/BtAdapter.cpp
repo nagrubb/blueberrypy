@@ -9,6 +9,8 @@ using namespace std;
 using namespace bluez::native;
 
 BtAdapter::BtAdapter(int id) {
+  cout << "bluez::native::BtAdapter::BtAdapter()" << endl;
+
   m_id = id;
   m_hci_device = hci_open_dev(id);
 
@@ -18,6 +20,8 @@ BtAdapter::BtAdapter(int id) {
 }
 
 BtAdapter::~BtAdapter() {
+  cout << "bluez::native::BtAdapter::~BtAdapter()" << endl;
+
   if (hci_close_dev(m_hci_device) < 0) {
     perror("hci_close_dev()");
   }

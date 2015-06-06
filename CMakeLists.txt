@@ -14,6 +14,9 @@ find_package(PythonLibs)
 find_package(Boost COMPONENTS python)
 
 include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+include_directories(linux)
+
 link_libraries(${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+link_libraries(blueznative)
 
 python_add_module(blueberrypy python_bindings/blueberrypy.cpp)
