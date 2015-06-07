@@ -1,0 +1,78 @@
+#pragma once
+#include <stdint.h>
+#include <string>
+#include <map>
+
+namespace bluez {
+namespace native {
+class BleAdvertisement {
+public:
+  static BleAdvertisement* parse(uint8_t* data, size_t dataLength);
+  ~BleAdvertisement() {}
+
+  bool hasFlags();
+  bool rawFlags(uint8_t& flags);
+  bool limitedDiscoverable();
+  bool generalDiscoverable();
+  bool leOnly();
+  bool simulatenousLeBrEdrController();
+  bool simulatenousLeBrEdrHost();
+
+  bool incompleteList16BitServiceClass(std::string& serviceClass);
+  bool incompleteList32BitServiceClass(std::string& serviceClass);
+  bool incompleteList128BitServiceClass(std::string& serviceClass);
+  bool completeList16BitServiceClass(std::string& serviceClass);
+  bool completeList32BitServiceClass(std::string& serviceClass);
+  bool completeList128BitServiceClass(std::string& serviceClass);
+
+  bool shortenedLocalName(std::string& name);
+  bool completeLocalName(std::string& name);
+
+  bool txPowerLevel(std::string& powerLevel);
+  bool deviceId(std::string& deviceId);
+  bool slaveConnectionIntervalRange(std::string& intervalRange);
+  bool list16BitServiceSolicitation(std::string& service);
+  bool list32BitServiceSolicitation(std::string& service);
+  bool list128BitServiceSolicitation(std::string& service);
+  bool serviceData16Bit(std::string& serviceData);
+  bool serviceData32Bit(std::string& serviceData);
+  bool serviceData128Bit(std::string& serviceData);
+  bool appearance(std::string& appearance);
+  bool publicTargetAddress(std::string& targetAddress);
+  bool advertisingInterval(std::string& advertisingInterval);
+  bool manufacturerData(std::string& advertisingInterval);
+
+private:
+  BleAdvertisement() {}
+
+  template<class T>
+  bool getValue(T type, std::string& value) {
+    auto pair = m_parts.find((uint8_t) type);
+
+  	if (pair == m_parts.end()) {
+  		return false;
+  	}
+
+  	value = pair->second;
+  	return true;
+  }
+
+  template<class T>
+  bool isFlagSet(T flag) {
+    uint8_t tmp;
+
+    if (!rawFlags(tmp)) {
+      throw;
+    }
+
+    if (tmp & (uint8_t) flag) {
+      return true;
+    }
+
+    return false;
+  }
+
+  std::map<uint8_t, std::string> m_parts;
+};
+} //native
+} //bluez

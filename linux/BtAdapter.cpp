@@ -25,6 +25,7 @@ BtAdapter::BtAdapter(int id) {
 
 BtAdapter::~BtAdapter() {
   m_active = false;
+
   cout << "bluez::native::BtAdapter::~BtAdapter()" << endl;
 
   if (hci_close_dev(m_hci_device) < 0) {
@@ -32,22 +33,27 @@ BtAdapter::~BtAdapter() {
   }
 
   if (m_reader_thread) {
+    m_reader_thread->interrupt();
     m_reader_thread->join();
   }
 }
 
 bool BtAdapter::enableScanning() {
-  if (hci_le_set_scan_enable(m_hci_device, 0x01, 0x00, 1000) < 0) {
-    perror("hci_le_set_scan_enable()");
-    return false;
-  }
-
-  return true;
+  return setScanEnable(true, false);
 }
 
 bool BtAdapter::disableScanning() {
-  if (hci_le_set_scan_enable(m_hci_device, 0x01, 0x00, 1000) < 0) {
-    perror("hci_le_set_scan_enable()");
+  return setScanEnable(false, false);
+}
+
+bool BtAdapter::setScanEnable(bool enable, bool filterDuplicates) {
+  le_set_scan_enable_cp scan_enable_cp;
+
+  scan_enable_cp.enable = enable ? 1 : 0;
+  scan_enable_cp.filter_dup = filterDuplicates ? 1 : 0;
+
+  if (hci_send_cmd(m_hci_device, OGF_LE_CTL, OCF_LE_SET_SCAN_ENABLE, LE_SET_SCAN_ENABLE_CP_SIZE, (void*) &scan_enable_cp) < 0) {
+    perror("hci_send_cmd(OCF_LE_SET_SCAN_ENABLE)");
     return false;
   }
 
@@ -64,6 +70,7 @@ void BtAdapter::processHciData() {
 	setsockopt(m_hci_device, SOL_HCI, HCI_FILTER, &filter, sizeof(filter));
 
 	while(m_active) {
+    cout << "m_active is " << m_active << endl;
 		fd_set rfds;
 		timeval tv;
 		int select_ret;
@@ -79,12 +86,13 @@ void BtAdapter::processHciData() {
 		FD_ZERO(&rfds);
 		FD_SET(m_hci_device, &rfds);
 
-		tv.tv_sec = 1;
-		tv.tv_usec = 0;
+		tv.tv_sec = 0;
+		tv.tv_usec = 10000;
 
 		select_ret = select(m_hci_device + 1, &rfds, NULL, NULL, &tv);
 
 		if (select_ret == -1) {
+      cout << "select_ret" << select_ret << endl;
 			continue;
 		}
 
@@ -94,14 +102,21 @@ void BtAdapter::processHciData() {
 		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
 
 		if (le_meta_event->subevent != 0x02) {
+      cout << "le_meta_event->subevent" << le_meta_event->subevent << endl;
 			continue;
 		}
 
 		adv_info = (le_advertising_info *)(le_meta_event->data + 1);
-    cout << "Found Advertisment...Need to parse it" << endl;
-		//memset(&activator_adv, 0, sizeof(activator_adv));
+    cout << "Found Advertisment: Parsing..." << endl;
+		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info->data, adv_info->length);
+    if (!onAdvertisementScanned(advertisment)) {
+      cout << "Freeing advertisment" << endl;
+      delete advertisment;
+    }
+
+    cout << "Finished parsing..." << endl;
+
 		//activator_adv.bdaddr = &adv_info->bdaddr;
 		//activator_adv.rssi = *(adv_info->data + adv_info->length);
-		//adv_data = adv_info->data;
   }
 }

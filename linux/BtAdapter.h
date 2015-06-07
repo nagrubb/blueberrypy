@@ -1,23 +1,28 @@
 #pragma once
 #include <boost/thread.hpp>
+#include "BleAdvertisement.h"
 
 namespace bluez {
 namespace native {
-  class BtAdapter {
-  public:
-    BtAdapter(int id);
-    ~BtAdapter();
+class BtAdapter {
+public:
+  BtAdapter(int id);
+  virtual ~BtAdapter();
 
-    bool enableScanning();
-    bool disableScanning();
+  bool enableScanning();
+  bool disableScanning();
 
-  private:
-    void processHciData();
+protected:
+  virtual bool onAdvertisementScanned(BleAdvertisement* advertisment) { return false; }
 
-    int m_hci_device;
-    int m_id;
-    bool m_active;
-    boost::thread* m_reader_thread;
-  };
+private:
+  bool setScanEnable(bool enable, bool filterDuplicates);
+  void processHciData();
+
+  int m_hci_device;
+  int m_id;
+  bool m_active;
+  boost::thread* m_reader_thread;
+};
 } //native
 } //bluez
