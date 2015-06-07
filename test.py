@@ -7,11 +7,16 @@ class BtAdapterEvents:
   def __init__(self):
      print 'BtAdapterEvents'
   
-  def deviceDiscovered(self):
-     print 'DeviceDiscovered'
+  def onAdvertisementScanned(self, adv):
+     print 'onAdvertisementScanner'
+     print adv
+     print adv.hasFlags()
+     print adv.rawFlags()
+     print 'done'
+
 
 events = BtAdapterEvents()
 btAdapter = BtAdapter(0, events)
-fSuccess = btAdapter.enableScanning()
-print fSuccess
+print btAdapter.enableScanning()
 time.sleep(5) 
+print btAdapter.disableScanning()
