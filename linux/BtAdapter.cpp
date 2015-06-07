@@ -9,8 +9,6 @@ using namespace std;
 using namespace bluez::native;
 
 BtAdapter::BtAdapter(int id) {
-  cout << "bluez::native::BtAdapter::BtAdapter()" << endl;
-
   m_id = id;
   m_hci_device = hci_open_dev(id);
 
@@ -25,8 +23,6 @@ BtAdapter::BtAdapter(int id) {
 
 BtAdapter::~BtAdapter() {
   m_active = false;
-
-  cout << "bluez::native::BtAdapter::~BtAdapter()" << endl;
 
   if (hci_close_dev(m_hci_device) < 0) {
     perror("hci_close_dev()");
@@ -70,7 +66,6 @@ void BtAdapter::processHciData() {
 	setsockopt(m_hci_device, SOL_HCI, HCI_FILTER, &filter, sizeof(filter));
 
 	while(m_active) {
-    cout << "m_active is " << m_active << endl;
 		fd_set rfds;
 		timeval tv;
 		int select_ret;
@@ -78,10 +73,6 @@ void BtAdapter::processHciData() {
 		int hci_event_len = 0;
 		evt_le_meta_event *le_meta_event = NULL;
 		le_advertising_info *adv_info = NULL;
-		uint8_t* adv_data = NULL;
-		bool le_adv_part_parsed = false;
-		//le_adv_part_t le_adv_part;
-		//activator_adv_t activator_adv;
 
 		FD_ZERO(&rfds);
 		FD_SET(m_hci_device, &rfds);
@@ -92,7 +83,6 @@ void BtAdapter::processHciData() {
 		select_ret = select(m_hci_device + 1, &rfds, NULL, NULL, &tv);
 
 		if (select_ret == -1) {
-      cout << "select_ret" << select_ret << endl;
 			continue;
 		}
 
@@ -102,21 +92,13 @@ void BtAdapter::processHciData() {
 		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
 
 		if (le_meta_event->subevent != 0x02) {
-      cout << "le_meta_event->subevent" << le_meta_event->subevent << endl;
 			continue;
 		}
 
 		adv_info = (le_advertising_info *)(le_meta_event->data + 1);
-    cout << "Found Advertisment: Parsing..." << endl;
-		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info->data, adv_info->length);
+		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info);
     if (!onAdvertisementScanned(advertisment)) {
-      cout << "Freeing advertisment" << endl;
       delete advertisment;
     }
-
-    cout << "Finished parsing..." << endl;
-
-		//activator_adv.bdaddr = &adv_info->bdaddr;
-		//activator_adv.rssi = *(adv_info->data + adv_info->length);
   }
 }

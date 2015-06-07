@@ -1,22 +1,18 @@
 #!/usr/bin/python
 
 import time
+import pprint
 from blueberrypy import *
 
 class BtAdapterEvents:
-  def __init__(self):
-     print 'BtAdapterEvents'
-  
   def onAdvertisementScanned(self, adv):
-     print 'onAdvertisementScanner'
-     print adv
-     print adv.hasFlags()
-     print adv.rawFlags()
-     print 'done'
-
+     print 'Found Device'
+     print '\tBluetooth Address: {0}'.format(adv.btAddress)
+     print '\tAddress Type: {0}'.format(adv.addressType)
+     print '\tRSSI: {0}'.format(adv.rssi)
 
 events = BtAdapterEvents()
 btAdapter = BtAdapter(0, events)
-print btAdapter.enableScanning()
-time.sleep(5) 
-print btAdapter.disableScanning()
+print 'enableScanning returned {0}'.format(btAdapter.enableScanning())
+time.sleep(5)
+print 'disableScanning returned {0}'.format(btAdapter.disableScanning())

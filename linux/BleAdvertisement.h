@@ -7,8 +7,12 @@ namespace bluez {
 namespace native {
 class BleAdvertisement {
 public:
-  static BleAdvertisement* parse(uint8_t* data, size_t dataLength);
+  static BleAdvertisement* parse(void* adv_info);
   ~BleAdvertisement() {}
+
+  uint8_t rssi() { return m_rssi; }
+  std::string addressType() { return m_addressType; }
+  std::string btAddress() { return m_btAddress; }
 
   bool hasFlags();
   bool rawFlags(uint8_t& flags);
@@ -72,6 +76,9 @@ private:
     return false;
   }
 
+  uint8_t m_rssi;
+  std::string m_addressType;
+  std::string m_btAddress;
   std::map<uint8_t, std::string> m_parts;
 };
 } //native

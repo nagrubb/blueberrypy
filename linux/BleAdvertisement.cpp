@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 
+#include "bluetooth.h"
+#include "hci.h"
+#include "hci_lib.h"
+
 using namespace std;
 using namespace bluez::native;
 
@@ -39,10 +43,18 @@ enum class adv_data_flag_t {
 	SimulatenousLeBrEdrHost   			= 0x10
 };
 
-BleAdvertisement* BleAdvertisement::parse(uint8_t* data, size_t dataLength) {
+BleAdvertisement* BleAdvertisement::parse(void* adv_info) {
 	BleAdvertisement* adv = new BleAdvertisement();
+	le_advertising_info* info = (le_advertising_info*) adv_info;
+	uint8_t* data = info->data;
+	size_t dataLength = info->length;
 
-	cout << "BleAdvertisement::Parse called" << endl;
+	adv->m_rssi = *(info->data + info->length);
+	adv->m_addressType = (info->bdaddr_type == LE_PUBLIC_ADDRESS) ? "public" : "random";
+
+	char tmp[18];
+	ba2str(&info->bdaddr, tmp);
+	adv->m_btAddress = tmp;
 
 	//Advertisment parts are in the following format:
 	//Byte 1: Length (Number of bytes for the following Type and Data fields)
@@ -56,7 +68,6 @@ BleAdvertisement* BleAdvertisement::parse(uint8_t* data, size_t dataLength) {
 		--length; //length includes itself as one byte
 
 		if (length > dataLength) {
-			cout << "Length: " << (int) length << " DataLength: " << (int) dataLength << endl;
 			length = dataLength - 1;
 		}
 
@@ -67,7 +78,6 @@ BleAdvertisement* BleAdvertisement::parse(uint8_t* data, size_t dataLength) {
 		adv->m_parts[(uint8_t) type] = value;
 	}
 
-	cout << "BleAdvertisement::Parse finished" << endl;
 	return adv;
 }
 
