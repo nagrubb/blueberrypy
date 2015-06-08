@@ -4,8 +4,7 @@ BOOST_PYTHON_MODULE(blueberrypy)
 {
   class_<BtAdapter>("BtAdapter", init<int, PyObject*>())
     .def("enableScanning", &BtAdapter::enableScanning)
-    .def("disableScanning", &BtAdapter::disableScanning)
-    .def("trigger", &BtAdapter::trigger);
+    .def("disableScanning", &BtAdapter::disableScanning);
 
   class_<BleAdvertisement>("BleAdvertisement")
     .add_property("rssi", &BleAdvertisement::rssi)
@@ -41,7 +40,9 @@ BOOST_PYTHON_MODULE(blueberrypy)
 
   class_<BleDevice>("BleDevice");
 
-  class_<GattClient>("GattClient");
+  class_<GattClient>("GattClient", init<std::string>())
+    .def("connect", &GattClient::connect)
+    .def("disconnect", &GattClient::disconnect);
 
   class_<GattCharacteristic>("GattCharacteristic");
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "BtAdapter.h"
+#include "GattClient.h"
 #include <boost/python.hpp>
 #include <string>
 #include <sstream>
@@ -188,10 +189,6 @@ struct BtAdapter : public bluez::native::BtAdapter {
         PyEval_InitThreads();
     }
 
-    void trigger() {
-      call_method<void>(m_pyCallback, "onAdvertisementScanned", "fuck_yeah");
-    }
-
     virtual bool onAdvertisementScanned(bluez::native::BleAdvertisement* advertisment) {
       BleAdvertisement* wrapper = new BleAdvertisement(advertisment);
 
@@ -210,8 +207,10 @@ struct BleDevice {
     BleDevice() {}
 };
 
-struct GattClient {
-    GattClient() {}
+struct GattClient : bluez::native::GattClient {
+    GattClient(std::string btAddress) : bluez::native::GattClient(btAddress)  {}
+    ~GattClient() {}
+    //bluez::native::GattClient m_client;
 };
 
 struct GattCharacteristic {

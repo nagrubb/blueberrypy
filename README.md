@@ -7,7 +7,7 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Enable/disabling scanning (Done)
 - Parsing advertisement data (Done)
 - Python callback with parsed advertisement (Done)
-- Connect/disconnect BleDevice (In Progress)
+- Connect/disconnect BleDevice (Done)
 - Discovery of services and characteristics 
 - Read/write characteristic
 

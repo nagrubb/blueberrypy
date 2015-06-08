@@ -8,7 +8,7 @@ namespace native {
 class BleAdvertisement {
 public:
   static BleAdvertisement* parse(void* adv_info);
-  ~BleAdvertisement() {}
+  virtual ~BleAdvertisement() {}
 
   uint8_t rssi() { return m_rssi; }
   std::string addressType() { return m_addressType; }

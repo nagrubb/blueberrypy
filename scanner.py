@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import time
-import pprint
 from blueberrypy import *
 
 class BtAdapterEvents:
@@ -10,6 +9,7 @@ class BtAdapterEvents:
      print '\tBluetooth Address: {0}'.format(adv.btAddress)
      print '\tAddress Type: {0}'.format(adv.addressType)
      print '\tRSSI: {0}'.format(adv.rssi)
+
 
 events = BtAdapterEvents()
 btAdapter = BtAdapter(0, events)
