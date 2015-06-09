@@ -10,6 +10,12 @@ class BtAdapterEvents:
      print '\tAddress Type: {0}'.format(adv.addressType)
      print '\tRSSI: {0}'.format(adv.rssi)
 
+     if (adv.shortenedLocalName is not None):
+       print '\tShortened Local Name: {0}'.format(adv.shortenedLocalName)
+
+     if (adv.completeLocalName is not None):
+       print '\tComplete Local Name: {0}'.format(adv.completeLocalName)
+
 
 events = BtAdapterEvents()
 btAdapter = BtAdapter(0, events)

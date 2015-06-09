@@ -61,7 +61,7 @@ BleAdvertisement* BleAdvertisement::parse(void* adv_info) {
 	//Byte 2: Type (The type of advertisment part)
 	//Byte 3: Value
 	while (dataLength >= 3) {
-		uint8_t length = data[0];
+		size_t length = data[0];
 		adv_data_type_t type = (adv_data_type_t) data[1];
 
 		--dataLength;
@@ -71,7 +71,7 @@ BleAdvertisement* BleAdvertisement::parse(void* adv_info) {
 			length = dataLength - 1;
 		}
 
-		std::string value((const char*) data, length);
+		std::string value((const char*) &data[2], length);
 		data += (length + 2);
 		dataLength -= (length + 1);
 
