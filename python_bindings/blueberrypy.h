@@ -204,11 +204,17 @@ struct BtAdapter : public bluez::native::BtAdapter {
 };
 
 struct GattClient : bluez::native::GattClient {
-    GattClient(std::string btAddress) : bluez::native::GattClient(btAddress)  {}
-    ~GattClient() {}
-    //bluez::native::GattClient m_client;
+  GattClient(std::string btAddress) : bluez::native::GattClient(btAddress)  {}
+  ~GattClient() {}
+  //bluez::native::GattClient m_client;
+};
+
+struct GattService {
+  GattService() {}
+  ~GattService() {}
 };
 
 struct GattCharacteristic {
-    GattCharacteristic() {}
+  GattCharacteristic() {}
+  ~GattCharacteristic() {}
 };

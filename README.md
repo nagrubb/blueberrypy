@@ -8,9 +8,9 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Parsing advertisement data (Done)
 - Python callback with parsed advertisement (Done)
 - Connect/disconnect BleDevice (Done)
-- Enumeration of services (Done, but not yet tested)
-- Exposing services with python bindings
-- Enumeration of characteristics
+- Enumeration of services (Done)
+- Exposing services with python bindings (Not done)
+- Enumeration of characteristics (In progress)
 - Exposing characteristics with python bindings
 - Read characteristic
 - Write characteristic

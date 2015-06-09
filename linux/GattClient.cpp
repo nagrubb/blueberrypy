@@ -21,6 +21,11 @@ GattClient::GattClient(string btAddress) :
 GattClient::~GattClient() {
   cout << "bluez::native::GattClient::~GattClient" << endl;
   m_mainLoop.unref();
+
+  for(auto i = m_services.begin(); i != m_services.end(); ++i) {
+    delete *i;
+  }
+  m_services.clear();
 }
 
 bool GattClient::connect() {
@@ -93,6 +98,8 @@ bool GattClient::connect() {
 	cout << "Done" << endl;
   m_connected = true;
 
+  cout << "Connected transport" << endl;
+
   if (!initializeAtt()) {
     disconnect();
     return false;
@@ -121,7 +128,8 @@ bool GattClient::disconnect() {
 }
 
 bool GattClient::initializeAtt() {
-  uint16_t mtu = 0;
+  cout << "initialzeAtt started" << endl;
+
 	m_att = bt_att_new(m_socket, false);
 	if (!m_att) {
 		fprintf(stderr, "Failed to initialze ATT transport layer\n");
@@ -148,6 +156,7 @@ bool GattClient::initializeAtt() {
 		return false;
 	}
 
+  uint16_t mtu = 500;
   m_client = bt_gatt_client_new(m_db, m_att, mtu);
 	if (!m_client) {
 		fprintf(stderr, "Failed to create GATT client\n");
@@ -166,6 +175,8 @@ bool GattClient::initializeAtt() {
 
 	// bt_gatt_client already holds a reference
 	gatt_db_unref(m_db);
+
+  cout << "initialzeAtt completed" << endl;
 	return true;
 }
 
@@ -203,9 +214,13 @@ void GattClient::_onReady(bool success, uint8_t attErrorCode, void* obj) {
 }
 
 void GattClient::onReady(bool success, uint8_t attErrorCode) {
+  cout << "onReady called" << endl;
+
   if (success) {
     //enumerate services
+    cout << "enumerating services" << endl;
     gatt_db_foreach_service(m_db, NULL, &GattClient::_createService, this);
+    cout << "done enumerating services" << endl;
   }
 }
 

@@ -37,10 +37,14 @@ add_library(blueznative SHARED
   linux/BtAdapter.cpp
   linux/BleAdvertisement.h
   linux/BleAdvertisement.cpp
+  linux/GattUtilities.h
+  linux/GattUtilities.cpp
   linux/GattClient.h
   linux/GattClient.cpp
   linux/GattService.h
   linux/GattService.cpp
+  linux/GattCharacteristic.h
+  linux/GattCharacteristic.cpp
 )
 target_link_libraries(blueznative bluetooth)
 target_link_libraries(blueznative ${GLIB_PKG_LIBRARIES})
