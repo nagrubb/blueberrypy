@@ -24,13 +24,12 @@ BtAdapter::BtAdapter(int id) {
 BtAdapter::~BtAdapter() {
   m_active = false;
 
-  if (hci_close_dev(m_hci_device) < 0) {
-    perror("hci_close_dev()");
+  if (m_reader_thread) {
+    m_reader_thread->join();
   }
 
-  if (m_reader_thread) {
-    m_reader_thread->interrupt();
-    m_reader_thread->join();
+  if (hci_close_dev(m_hci_device) < 0) {
+    perror("hci_close_dev()");
   }
 }
 
@@ -57,7 +56,14 @@ bool BtAdapter::setScanEnable(bool enable, bool filterDuplicates) {
 }
 
 void BtAdapter::processHciData() {
+  int hci_event_len = 0;
+  evt_le_meta_event *le_meta_event = NULL;
+  le_advertising_info *adv_info = NULL;
+  unsigned char hci_event_buf[HCI_MAX_EVENT_SIZE];
 	hci_filter filter;
+  fd_set rfds;
+  timeval tv;
+  int select_ret;
 
 	// setup HCI filter
 	hci_filter_clear(&filter);
@@ -66,39 +72,35 @@ void BtAdapter::processHciData() {
 	setsockopt(m_hci_device, SOL_HCI, HCI_FILTER, &filter, sizeof(filter));
 
 	while(m_active) {
-		fd_set rfds;
-		timeval tv;
-		int select_ret;
-		unsigned char hci_event_buf[HCI_MAX_EVENT_SIZE];
-		int hci_event_len = 0;
-		evt_le_meta_event *le_meta_event = NULL;
-		le_advertising_info *adv_info = NULL;
 
 		FD_ZERO(&rfds);
 		FD_SET(m_hci_device, &rfds);
 
-		tv.tv_sec = 0;
-		tv.tv_usec = 10000;
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
 
-		select_ret = select(m_hci_device + 1, &rfds, NULL, NULL, &tv);
+    select_ret = select(m_hci_device + 1, &rfds, NULL, NULL, &tv);
 
 		if (select_ret == -1) {
 			continue;
 		}
 
-		// read HCI event
-		hci_event_len = read(m_hci_device, hci_event_buf, sizeof(hci_event_buf));
-		le_meta_event = (evt_le_meta_event *)(hci_event_buf + (1 + HCI_EVENT_HDR_SIZE));
-		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
+    if (select_ret) {
+  		// read HCI event
+  		hci_event_len = read(m_hci_device, hci_event_buf, sizeof(hci_event_buf));
 
-		if (le_meta_event->subevent != 0x02) {
-			continue;
-		}
+  		le_meta_event = (evt_le_meta_event *)(hci_event_buf + (1 + HCI_EVENT_HDR_SIZE));
+  		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
 
-		adv_info = (le_advertising_info *)(le_meta_event->data + 1);
-		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info);
-    if (!onAdvertisementScanned(advertisment)) {
-      delete advertisment;
+  		if (le_meta_event->subevent != 0x02) {
+  			continue;
+  		}
+
+  		adv_info = (le_advertising_info *)(le_meta_event->data + 1);
+  		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info);
+      if (!onAdvertisementScanned(advertisment)) {
+        delete advertisment;
+      }
     }
   }
 }
