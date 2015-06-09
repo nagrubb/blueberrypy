@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 import time
+import threading
 import blueberrypy
 
 class GattClient:
-  def __init__(self, address):
+  def __init__(self, address, event):
+    self.event = event
     self.client = blueberrypy.GattClient(address, self)
 
   def onServicesDiscovered(self):
@@ -24,6 +26,7 @@ class GattClient:
         for descriptor in characteristic.descriptors:
             print '        Descriptor UUID: {0}'.format(descriptor.uuid)
             print '          Handle: {0}'.format(descriptor.handle)
+    self.event.set()
 
   def connect(self):
     return self.client.connect()
@@ -35,10 +38,11 @@ class GattClient:
     return self.client.services
 
 print 'Connecting Gatt Client...'
-client = GattClient('CA:17:34:15:52:0B')
+event = threading.Event()
+client = GattClient('CA:17:34:15:52:0B', event)
 if client.connect():
   print 'Connected'
-  time.sleep(6)
+  event.wait()
   client.disconnect()
 else:
   print 'Failed to connect'
