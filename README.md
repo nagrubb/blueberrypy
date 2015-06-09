@@ -22,3 +22,4 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 Issues
  - Read advertisment thread never exits
  - Mainloop thread never exits
+ - Expose ATT errors up to python

@@ -16,10 +16,8 @@ MainLoop::MainLoop() {
 }
 
 MainLoop::~MainLoop() {
-  cout << "mainloop_exit_success() started" << endl;
   mainloop_exit_success();
-  cout << "mainloop_exit_success() ended" << endl;
-  //m_thread.join(); <-- mainloop_run() doesn't exit
+  //m_thread.join(); <-- mainloop_run() doesn't exit causing this to hang
   //cout << "joining mainloop() ended" << endl;
 }
 
@@ -38,10 +36,6 @@ void MainLoop::unref() {
 }
 
 void MainLoop::runner() {
-  cout << "mainloop_init() started" << endl;
   mainloop_init();
-  cout << "mainloop_init() ended" << endl;  
-  cout << "mainloop_run() started" << endl;
   mainloop_run();
-  cout << "mainloop_run() ended" << endl;
 }

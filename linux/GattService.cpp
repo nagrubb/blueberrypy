@@ -15,13 +15,10 @@ GattService* GattService::create(gatt_db_attribute* attr) {
 		return NULL;
   }
 
-  cout << "GattService::create(" << uuid << ")" << endl;
   return new GattService(attr, startHandle, endHandle, primary, uuid);
 }
 
 GattService::~GattService() {
-  cout << "bluez::native::GattService::~GattService" << endl;
-
   for(auto i = m_characteristics.begin(); i != m_characteristics.end(); ++i) {
     delete *i;
   }

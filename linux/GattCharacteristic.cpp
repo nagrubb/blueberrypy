@@ -15,13 +15,10 @@ GattCharacteristic* GattCharacteristic::create(gatt_db_attribute* attr) {
     return NULL;
   }
 
-  cout << "GattCharacteristic::create(" << uuid << ")" << endl;
   return new GattCharacteristic(attr, handle, valueHandle, properties, uuid);
 }
 
 GattCharacteristic::~GattCharacteristic() {
-  cout << "bluez::native::GattCharacteristic::~GattCharacteristic" << endl;
-
   for(auto i = m_descriptors.begin(); i != m_descriptors.end(); ++i) {
     delete *i;
   }

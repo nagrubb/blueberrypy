@@ -8,8 +8,7 @@ class GattClient:
     self.client = blueberrypy.GattClient(address, self)
 
   def onServicesDiscovered(self):
-    print 'onServicesDiscovered'
-    print self.client.services
+    print 'Services Discovered:'
     for service in self.client.services:
       print 'Service UUID: {0}'.format(service.uuid)
       print '  Primary: {0}'.format(service.primary)
@@ -35,9 +34,13 @@ class GattClient:
   def services(self):
     return self.client.services
 
-print 'Creating Gatt Client...'
+print 'Connecting Gatt Client...'
 client = GattClient('CA:17:34:15:52:0B')
-client.connect()
-time.sleep(6)
-client.disconnect()
+if client.connect():
+  print 'Connected'
+  time.sleep(6)
+  client.disconnect()
+else:
+  print 'Failed to connect'
+
 client = None

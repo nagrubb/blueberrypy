@@ -19,7 +19,6 @@ GattClient::GattClient(string btAddress) :
 }
 
 GattClient::~GattClient() {
-  cout << "bluez::native::GattClient::~GattClient" << endl;
   m_mainLoop.unref();
 
   for(auto i = m_services.begin(); i != m_services.end(); ++i) {
@@ -46,9 +45,6 @@ bool GattClient::connect() {
 
 	ba2str(&srcAddress, srcaddr_str);
 	ba2str(&dstAddress, dstaddr_str);
-
-	cout << "Opening L2CAP LE connection on ATT channel" << endl;
-  cout << "Source: " << srcaddr_str << " Destination: " << dstaddr_str << endl;
 
   m_socket = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
 	if (m_socket < 0) {
@@ -85,19 +81,13 @@ bool GattClient::connect() {
   dstSocketAddress.l2_bdaddr_type = dst_type;
 	bacpy(&dstSocketAddress.l2_bdaddr, &dstAddress);
 
-	cout << "Connecting to device..." << endl;
-	fflush(stdout);
-
 	if (::connect(m_socket, (struct sockaddr *) &dstSocketAddress, sizeof(dstSocketAddress)) < 0) {
 		perror("connect()");
 		close(m_socket);
 		return false;
 	}
 
-	cout << "Done" << endl;
   m_connected = true;
-
-  cout << "Connected transport" << endl;
 
   if (!initializeAtt()) {
     disconnect();
@@ -127,8 +117,6 @@ bool GattClient::disconnect() {
 }
 
 bool GattClient::initializeAtt() {
-  cout << "initialzeAtt started" << endl;
-
 	m_att = bt_att_new(m_socket, false);
 	if (!m_att) {
 		fprintf(stderr, "Failed to initialze ATT transport layer\n");
@@ -175,7 +163,6 @@ bool GattClient::initializeAtt() {
 	// bt_gatt_client already holds a reference
 	gatt_db_unref(m_db);
 
-  cout << "initialzeAtt completed" << endl;
 	return true;
 }
 
@@ -213,13 +200,9 @@ void GattClient::_onReady(bool success, uint8_t attErrorCode, void* obj) {
 }
 
 void GattClient::onReady(bool success, uint8_t attErrorCode) {
-  cout << "onReady called" << endl;
-
   if (success) {
     //enumerate services
-    cout << "enumerating services" << endl;
     gatt_db_foreach_service(m_db, NULL, &GattClient::_createService, this);
-    cout << "done enumerating services" << endl;
   }
 
   onServicesDiscovered();
