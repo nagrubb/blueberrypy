@@ -25,6 +25,7 @@ GattClient::~GattClient() {
   for(auto i = m_services.begin(); i != m_services.end(); ++i) {
     delete *i;
   }
+
   m_services.clear();
 }
 
@@ -220,6 +221,8 @@ void GattClient::onReady(bool success, uint8_t attErrorCode) {
     gatt_db_foreach_service(m_db, NULL, &GattClient::_createService, this);
     cout << "done enumerating services" << endl;
   }
+
+  onServicesDiscovered();
 }
 
 void GattClient::_onServiceChanged(uint16_t startHandle, uint16_t endHandle, void* obj) {

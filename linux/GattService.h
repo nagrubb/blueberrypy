@@ -17,6 +17,11 @@ public:
   static GattService* create(gatt_db_attribute* attr);
   ~GattService();
 
+  uint16_t getStartHandle();
+  uint16_t getEndHandle();
+  bool getPrimary();
+  std::string getUuid();
+
 private:
   GattService(gatt_db_attribute* attr, uint16_t startHandle, uint16_t endHandle, bool primary, bt_uuid_t uuid);
   static void _createCharacteristic(gatt_db_attribute* attr, void* obj);

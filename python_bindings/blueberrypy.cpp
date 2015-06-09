@@ -38,9 +38,10 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .add_property("advertisingInterval", &BleAdvertisement::advertisingInterval)
     .add_property("manufacturerData", &BleAdvertisement::manufacturerData);
 
-  class_<GattClient>("GattClient", init<std::string>())
+  class_<GattClient>("GattClient", init<std::string, PyObject*>())
     .def("connect", &GattClient::connect)
-    .def("disconnect", &GattClient::disconnect);
+    .def("disconnect", &GattClient::disconnect)
+    .add_property("services", &GattClient::getServices);
 
   class_<GattService>("GattService");
 

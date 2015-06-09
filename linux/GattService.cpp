@@ -25,6 +25,7 @@ GattService::~GattService() {
   for(auto i = m_characteristics.begin(); i != m_characteristics.end(); ++i) {
     delete *i;
   }
+
   m_characteristics.clear();
 }
 
@@ -37,6 +38,22 @@ GattService::GattService(gatt_db_attribute* attr, uint16_t startHandle, uint16_t
   m_uuid(uuid) {
 
   gatt_db_service_foreach_char(attr, &GattService::_createCharacteristic, this);
+}
+
+uint16_t GattService::getStartHandle() {
+  return m_startHandle;
+}
+
+uint16_t GattService::getEndHandle() {
+  return m_endHandle;
+}
+
+bool GattService::getPrimary() {
+  return m_primary;
+}
+
+std::string GattService::getUuid() {
+  return uuidToString(&m_uuid);
 }
 
 void GattService::_createCharacteristic(gatt_db_attribute* attr, void* obj) {

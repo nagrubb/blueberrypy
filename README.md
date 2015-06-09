@@ -10,9 +10,9 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Connect/disconnect BleDevice (Done)
 - Enumeration of services (Done)
 - Enumeration of characteristics (Done)
-- Enumeration of descriptors (In progress)
-- Exposing services with python bindings (Not done)
-- Exposing characteristics with python bindings
+- Enumeration of descriptors (Done)
+- Exposing services with python bindings (In progress)
+- Exposing characteristics with python bindings (In progress)
 - Read characteristic with python bindings
 - Write characteristic with python bindings
 - Notifty characteristic with python bindings

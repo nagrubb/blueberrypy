@@ -200,21 +200,54 @@ struct BtAdapter : public bluez::native::BtAdapter {
     }
 
     PyObject* const m_pyCallback;
-    //bluez::native::BtAdapter m_adapter;
-};
-
-struct GattClient : bluez::native::GattClient {
-  GattClient(std::string btAddress) : bluez::native::GattClient(btAddress)  {}
-  ~GattClient() {}
-  //bluez::native::GattClient m_client;
 };
 
 struct GattService {
-  GattService() {}
-  ~GattService() {}
+  GattService() {
+    throw;
+  }
+
+  GattService(bluez::native::GattService* service) {
+    m_service = service;
+  }
+
+  ~GattService() {
+    //don't delete m_service as it doesn't belong to us. This
+    //is a wrapper object that doesn't own the underlying object.
+  }
+
+  bluez::native::GattService* m_service;
 };
 
 struct GattCharacteristic {
   GattCharacteristic() {}
   ~GattCharacteristic() {}
+};
+
+struct GattClient : bluez::native::GattClient {
+  GattClient(std::string btAddress, PyObject* pyCallback) : bluez::native::GattClient(btAddress), m_pyCallback(pyCallback) {
+    PyEval_InitThreads();
+  }
+  
+  ~GattClient() {}
+
+  virtual void onServicesDiscovered() {
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onServicesDiscovered");
+    PyGILState_Release(gstate);
+  }
+
+  boost::python::list getServices() {
+    boost::python::list list;
+
+    for (auto i = ServiceCollectionBegin(); i != ServiceCollectionEnd(); ++i) {
+      GattService* service = new GattService(*i);
+      list.append(service);
+    }
+
+    return list;
+  }
+
+  PyObject* const m_pyCallback;
 };

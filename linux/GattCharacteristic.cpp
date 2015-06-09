@@ -21,6 +21,12 @@ GattCharacteristic* GattCharacteristic::create(gatt_db_attribute* attr) {
 
 GattCharacteristic::~GattCharacteristic() {
   cout << "bluez::native::GattCharacteristic::~GattCharacteristic" << endl;
+
+  for(auto i = m_descriptors.begin(); i != m_descriptors.end(); ++i) {
+    delete *i;
+  }
+
+  m_descriptors.clear();
 }
 
 GattCharacteristic::GattCharacteristic(gatt_db_attribute* attr, uint16_t handle, uint16_t valueHandle, uint8_t properties, bt_uuid_t uuid) :
@@ -28,4 +34,36 @@ GattCharacteristic::GattCharacteristic(gatt_db_attribute* attr, uint16_t handle,
   m_handle(handle),
   m_valueHandle(valueHandle),
   m_properties(properties),
-  m_uuid(uuid) {}
+  m_uuid(uuid) {
+
+  gatt_db_service_foreach_desc(attr, &GattCharacteristic::_createDescriptor, this);
+}
+
+uint16_t GattCharacteristic::getHandle() {
+  return m_handle;
+}
+
+uint16_t GattCharacteristic::getValueHandle() {
+  return m_valueHandle;
+}
+
+uint8_t GattCharacteristic::getProperties() {
+  return m_properties;
+}
+
+std::string GattCharacteristic::getUuid() {
+  return uuidToString(&m_uuid);
+}
+
+void GattCharacteristic::_createDescriptor(gatt_db_attribute* attr, void* obj) {
+  GattCharacteristic* characteristic = static_cast<GattCharacteristic*>(obj);
+  characteristic->createDescriptor(attr);
+}
+
+void GattCharacteristic::createDescriptor(gatt_db_attribute* attr) {
+  GattDescriptor* descriptor = GattDescriptor::create(attr);
+
+  if (descriptor) {
+    m_descriptors.push_back(descriptor);
+  }
+}

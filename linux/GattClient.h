@@ -14,12 +14,21 @@ extern "C" {
 namespace bluez {
 namespace native {
 class GattClient {
+private:
+  typedef std::list<GattService*> GattServiceCollection;
+
 public:
   GattClient(std::string btAddress);
   virtual ~GattClient();
 
+  virtual void onServicesDiscovered() {}
+
   bool connect();
   bool disconnect();
+
+  typedef GattServiceCollection::const_iterator GattServiceIterator;
+  GattServiceIterator ServiceCollectionBegin() const { return m_services.begin(); }
+  GattServiceIterator ServiceCollectionEnd() const { return m_services.end(); }
 
 private:
   bool initializeAtt();
@@ -47,7 +56,7 @@ private:
   bt_att* m_att;
   gatt_db* m_db;
   bt_gatt_client* m_client;
-  std::list<GattService*> m_services;
+  GattServiceCollection m_services;
 };
 } //native
 } //bluez
