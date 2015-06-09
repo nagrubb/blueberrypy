@@ -41,15 +41,13 @@ bool GattClient::connect() {
     return false;
   }
 
-  {
-		char srcaddr_str[18], dstaddr_str[18];
+	char srcaddr_str[18], dstaddr_str[18];
 
-		ba2str(&srcAddress, srcaddr_str);
-		ba2str(&dstAddress, dstaddr_str);
+	ba2str(&srcAddress, srcaddr_str);
+	ba2str(&dstAddress, dstaddr_str);
 
-		cout << "Opening L2CAP LE connection on ATT channel" << endl;
-    cout << "Source: " << srcaddr_str << " Destination: " << dstaddr_str << endl;
-	}
+	cout << "Opening L2CAP LE connection on ATT channel" << endl;
+  cout << "Source: " << srcaddr_str << " Destination: " << dstaddr_str << endl;
 
   m_socket = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
 	if (m_socket < 0) {
