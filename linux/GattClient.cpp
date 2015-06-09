@@ -93,6 +93,11 @@ bool GattClient::connect() {
 	cout << "Done" << endl;
   m_connected = true;
 
+  if (!initializeAtt()) {
+    disconnect();
+    return false;
+  }
+
 	return true;
 }
 
@@ -102,15 +107,124 @@ bool GattClient::disconnect() {
     return true;
   }
 
+  m_connected = false;
   int socketToBeClosed = __sync_val_compare_and_swap(&m_socket, m_socket, INVALID_SOCKET);
   if (socketToBeClosed != INVALID_SOCKET) {
     if (close(socketToBeClosed) != 0) {
-      //socketToBeClosed is leaked at this point.
+      //socketToBeClosed could be leaked at this point.
       perror("close()");
       return false;
     }
   }
 
-
   return true;
+}
+
+bool GattClient::initializeAtt() {
+  uint16_t mtu = 0;
+	m_att = bt_att_new(m_socket, false);
+	if (!m_att) {
+		fprintf(stderr, "Failed to initialze ATT transport layer\n");
+		bt_att_unref(m_att);
+		return false;
+	}
+
+	if (!bt_att_set_close_on_unref(m_att, true)) {
+		fprintf(stderr, "Failed to set up ATT transport layer\n");
+		bt_att_unref(m_att);
+		return false;
+	}
+
+	if (!bt_att_register_disconnect(m_att, &GattClient::_onDisconnected, this, NULL)) {
+		fprintf(stderr, "Failed to set ATT disconnect handler\n");
+		bt_att_unref(m_att);
+		return false;
+	}
+
+	m_db = gatt_db_new();
+	if (!m_db) {
+		fprintf(stderr, "Failed to create GATT database\n");
+		bt_att_unref(m_att);
+		return false;
+	}
+
+  m_client = bt_gatt_client_new(m_db, m_att, mtu);
+	if (!m_client) {
+		fprintf(stderr, "Failed to create GATT client\n");
+		gatt_db_unref(m_db);
+		bt_att_unref(m_att);
+		return false;
+	}
+
+  bt_att_set_debug(m_att, &GattClient::_onDebugMessage, this, NULL);
+	bt_gatt_client_set_debug(m_client, &GattClient::_onDebugMessage, this, NULL);
+
+	gatt_db_register(m_db, &GattClient::_onServiceAdded, &GattClient::_onServiceRemoved, this, NULL);
+
+	bt_gatt_client_set_ready_handler(m_client, &GattClient::_onReady, this, NULL);
+	bt_gatt_client_set_service_changed(m_client, &GattClient::_onServiceChanged, this, NULL);
+
+	// bt_gatt_client already holds a reference
+	gatt_db_unref(m_db);
+	return true;
+}
+
+void GattClient::_onDisconnected(int err, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onDisconnected(err);
+}
+
+void GattClient::onDisconnected(int err) {}
+
+void GattClient::_onDebugMessage(const char* str, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onDebugMessage(str);
+}
+
+void GattClient::onDebugMessage(const char* str) {}
+
+void GattClient::_onServiceAdded(gatt_db_attribute *attr, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onServiceAdded(attr);
+}
+
+void GattClient::onServiceAdded(gatt_db_attribute *attr) {}
+
+void GattClient::_onServiceRemoved(gatt_db_attribute *attr, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onServiceRemoved(attr);
+}
+
+void GattClient::onServiceRemoved(gatt_db_attribute *attr) {}
+
+void GattClient::_onReady(bool success, uint8_t attErrorCode, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onReady(success, attErrorCode);
+}
+
+void GattClient::onReady(bool success, uint8_t attErrorCode) {
+  if (success) {
+    //enumerate services
+    gatt_db_foreach_service(m_db, NULL, &GattClient::_createService, this);
+  }
+}
+
+void GattClient::_onServiceChanged(uint16_t startHandle, uint16_t endHandle, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onServiceChanged(startHandle, endHandle);
+}
+
+void GattClient::onServiceChanged(uint16_t startHandle, uint16_t endHandle) {}
+
+void GattClient::_createService(gatt_db_attribute* attr, void* obj) {
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->createService(attr);
+}
+
+void GattClient::createService(gatt_db_attribute* attr) {
+  GattService* service = GattService::create(attr);
+
+  if (service) {
+    m_services.push_back(service);
+  }
 }

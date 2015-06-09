@@ -203,10 +203,6 @@ struct BtAdapter : public bluez::native::BtAdapter {
     //bluez::native::BtAdapter m_adapter;
 };
 
-struct BleDevice {
-    BleDevice() {}
-};
-
 struct GattClient : bluez::native::GattClient {
     GattClient(std::string btAddress) : bluez::native::GattClient(btAddress)  {}
     ~GattClient() {}
