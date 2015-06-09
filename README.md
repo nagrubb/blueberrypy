@@ -20,6 +20,6 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Create Python module to make native bindings easier to use
 
 Issues
- - Read advertisment thread never exits
+ - Read advertisment thread never exits (fixed)
  - Mainloop thread never exits
  - Expose ATT errors up to python
