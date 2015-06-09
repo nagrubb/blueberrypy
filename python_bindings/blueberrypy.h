@@ -202,6 +202,75 @@ struct BtAdapter : public bluez::native::BtAdapter {
     PyObject* const m_pyCallback;
 };
 
+struct GattDescriptor {
+  GattDescriptor() {
+    throw;
+  }
+
+  GattDescriptor(bluez::native::GattDescriptor *descriptor) {
+    m_descriptor = descriptor;
+  }
+
+  ~GattDescriptor() {
+    //don't delete m_service as it doesn't belong to us. This
+    //is a wrapper object that doesn't own the underlying object.
+  }
+
+  boost::python::object getUuid() {
+    return boost::python::object(m_descriptor->getUuid());
+  }
+
+  boost::python::object getHandle() {
+    return boost::python::object(m_descriptor->getHandle());
+  }
+
+  bluez::native::GattDescriptor* m_descriptor;
+};
+
+struct GattCharacteristic {
+  GattCharacteristic() {
+    throw;
+  }
+
+  GattCharacteristic(bluez::native::GattCharacteristic* characteristic) {
+    m_characteristic = characteristic;
+  }
+
+  ~GattCharacteristic() {
+    //don't delete m_service as it doesn't belong to us. This
+    //is a wrapper object that doesn't own the underlying object.
+  }
+
+  boost::python::object getHandle() {
+    return boost::python::object(m_characteristic->getHandle());
+  }
+
+  boost::python::object getValueHandle() {
+    return boost::python::object(m_characteristic->getValueHandle());
+  }
+
+  boost::python::object getProperties() {
+    return boost::python::object(m_characteristic->getProperties());
+  }
+
+  boost::python::object getUuid() {
+    return boost::python::object(m_characteristic->getUuid());
+  }
+
+  boost::python::list getDescriptors() {
+    boost::python::list list;
+
+    for (auto i = m_characteristic->DescriptorCollectionBegin(); i != m_characteristic->DescriptorCollectionEnd(); ++i) {
+      GattDescriptor* wrapper = new GattDescriptor(*i);
+      list.append(wrapper);
+    }
+
+    return list;
+  }
+
+  bluez::native::GattCharacteristic* m_characteristic;
+};
+
 struct GattService {
   GattService() {
     throw;
@@ -216,19 +285,41 @@ struct GattService {
     //is a wrapper object that doesn't own the underlying object.
   }
 
-  bluez::native::GattService* m_service;
-};
+  boost::python::object getStartHandle() {
+    return boost::python::object(m_service->getStartHandle());
+  }
 
-struct GattCharacteristic {
-  GattCharacteristic() {}
-  ~GattCharacteristic() {}
+  boost::python::object getEndHandle() {
+    return boost::python::object(m_service->getEndHandle());
+  }
+
+  boost::python::object getPrimary() {
+    return boost::python::object(m_service->getPrimary());
+  }
+
+  boost::python::object getUuid() {
+    return boost::python::object(m_service->getUuid());
+  }
+
+  boost::python::list getCharacteristics() {
+    boost::python::list list;
+
+    for (auto i = m_service->CharacteristicCollectionBegin(); i != m_service->CharacteristicCollectionEnd(); ++i) {
+      GattCharacteristic* wrapper = new GattCharacteristic(*i);
+      list.append(wrapper);
+    }
+
+    return list;
+  }
+
+  bluez::native::GattService* m_service;
 };
 
 struct GattClient : bluez::native::GattClient {
   GattClient(std::string btAddress, PyObject* pyCallback) : bluez::native::GattClient(btAddress), m_pyCallback(pyCallback) {
     PyEval_InitThreads();
   }
-  
+
   ~GattClient() {}
 
   virtual void onServicesDiscovered() {
@@ -242,8 +333,8 @@ struct GattClient : bluez::native::GattClient {
     boost::python::list list;
 
     for (auto i = ServiceCollectionBegin(); i != ServiceCollectionEnd(); ++i) {
-      GattService* service = new GattService(*i);
-      list.append(service);
+      GattService* wrapper = new GattService(*i);
+      list.append(wrapper);
     }
 
     return list;

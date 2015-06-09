@@ -11,12 +11,13 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Enumeration of services (Done)
 - Enumeration of characteristics (Done)
 - Enumeration of descriptors (Done)
-- Exposing services with python bindings (In progress)
-- Exposing characteristics with python bindings (In progress)
+- Exposing services with python bindings (Done)
+- Exposing characteristics with python bindings (Done)
 - Read characteristic with python bindings
 - Write characteristic with python bindings
 - Notifty characteristic with python bindings
 - Indicate characteristic with python bindings
+- Create Python module to make native bindings easier to use
 
 Issues
  - Read advertisment thread never exits

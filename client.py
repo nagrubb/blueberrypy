@@ -10,8 +10,21 @@ class GattClient:
   def onServicesDiscovered(self):
     print 'onServicesDiscovered'
     print self.client.services
-    #for service in self.client.services:
-    #  print service.uuid;
+    for service in self.client.services:
+      print 'Service UUID: {0}'.format(service.uuid)
+      print '  Primary: {0}'.format(service.primary)
+      print '  Start Handle: {0}'. format(service.startHandle)
+      print '  End Handle: {0}'. format(service.endHandle)
+
+      for characteristic in service.characteristics:
+        print '    Charateristic UUID: {0}'.format(characteristic.uuid)
+        print '      Handle: {0}'.format(characteristic.handle)
+        print '      Value Handle: {0}'.format(characteristic.valueHandle)
+        print '      Properties: {0}'.format(characteristic.properties)
+
+        for descriptor in characteristic.descriptors:
+            print '        Descriptor UUID: {0}'.format(descriptor.uuid)
+            print '          Handle: {0}'.format(descriptor.handle)
 
   def connect(self):
     return self.client.connect()

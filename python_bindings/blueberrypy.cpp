@@ -43,7 +43,21 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .def("disconnect", &GattClient::disconnect)
     .add_property("services", &GattClient::getServices);
 
-  class_<GattService>("GattService");
+  class_<GattService>("GattService")
+    .add_property("startHandle", &GattService::getStartHandle)
+    .add_property("endHandle", &GattService::getEndHandle)
+    .add_property("primary", &GattService::getPrimary)
+    .add_property("uuid", &GattService::getUuid)
+    .add_property("characteristics", &GattService::getCharacteristics);
 
-  class_<GattCharacteristic>("GattCharacteristic");
+  class_<GattCharacteristic>("GattCharacteristic")
+    .add_property("handle", &GattCharacteristic::getHandle)
+    .add_property("valueHandle", &GattCharacteristic::getValueHandle)
+    .add_property("properties", &GattCharacteristic::getProperties)
+    .add_property("uuid", &GattCharacteristic::getUuid)
+    .add_property("descriptors", &GattCharacteristic::getDescriptors);
+
+  class_<GattDescriptor>("GattDescriptor")
+    .add_property("handle", &GattDescriptor::getHandle)
+    .add_property("uuid", &GattDescriptor::getUuid);
 }

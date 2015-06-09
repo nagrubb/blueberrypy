@@ -13,6 +13,9 @@ extern "C" {
 namespace bluez {
 namespace native {
 class GattCharacteristic {
+private:
+  typedef std::list<GattDescriptor*> DescriptorCollection;
+
 public:
   static GattCharacteristic* create(gatt_db_attribute* attr);
   ~GattCharacteristic();
@@ -21,6 +24,10 @@ public:
   uint16_t getValueHandle();
   uint8_t getProperties();
   std::string getUuid();
+
+  typedef DescriptorCollection::const_iterator DescriptorIterator;
+  DescriptorIterator DescriptorCollectionBegin() const { return m_descriptors.begin(); }
+  DescriptorIterator DescriptorCollectionEnd() const { return m_descriptors.end(); }
 
 private:
   GattCharacteristic(gatt_db_attribute* attr, uint16_t m_handle, uint16_t m_valueHandle, uint8_t m_properties, bt_uuid_t m_uuid);
@@ -33,7 +40,7 @@ private:
   uint16_t m_valueHandle;
   uint8_t m_properties;
   bt_uuid_t m_uuid;
-  std::list<GattDescriptor*> m_descriptors;
+  DescriptorCollection m_descriptors;
 };
 } //native
 } //bluez

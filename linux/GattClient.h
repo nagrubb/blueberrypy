@@ -15,7 +15,7 @@ namespace bluez {
 namespace native {
 class GattClient {
 private:
-  typedef std::list<GattService*> GattServiceCollection;
+  typedef std::list<GattService*> ServiceCollection;
 
 public:
   GattClient(std::string btAddress);
@@ -26,9 +26,9 @@ public:
   bool connect();
   bool disconnect();
 
-  typedef GattServiceCollection::const_iterator GattServiceIterator;
-  GattServiceIterator ServiceCollectionBegin() const { return m_services.begin(); }
-  GattServiceIterator ServiceCollectionEnd() const { return m_services.end(); }
+  typedef ServiceCollection::const_iterator ServiceIterator;
+  ServiceIterator ServiceCollectionBegin() const { return m_services.begin(); }
+  ServiceIterator ServiceCollectionEnd() const { return m_services.end(); }
 
 private:
   bool initializeAtt();
@@ -56,7 +56,7 @@ private:
   bt_att* m_att;
   gatt_db* m_db;
   bt_gatt_client* m_client;
-  GattServiceCollection m_services;
+  ServiceCollection m_services;
 };
 } //native
 } //bluez
