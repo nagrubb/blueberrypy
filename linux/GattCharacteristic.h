@@ -4,6 +4,7 @@ extern "C" {
   #include "bluetooth.h"
   #include "uuid.h"
   #include "gatt-db.h"
+  #include "gatt-client.h"
 }
 
 #include "GattDescriptor.h"
@@ -17,7 +18,7 @@ private:
   typedef std::list<GattDescriptor*> DescriptorCollection;
 
 public:
-  static GattCharacteristic* create(gatt_db_attribute* attr);
+  static GattCharacteristic* create(bt_gatt_client* client, gatt_db_attribute* attr);
   ~GattCharacteristic();
 
   uint16_t getHandle();
@@ -29,12 +30,26 @@ public:
   DescriptorIterator DescriptorCollectionBegin() const { return m_descriptors.begin(); }
   DescriptorIterator DescriptorCollectionEnd() const { return m_descriptors.end(); }
 
+public:
+  bool read();
 private:
-  GattCharacteristic(gatt_db_attribute* attr, uint16_t m_handle, uint16_t m_valueHandle, uint8_t m_properties, bt_uuid_t m_uuid);
+  static void _readCallback(bool success, uint8_t attErrorCode, const uint8_t* value, uint16_t length, void* obj);
+  void readCallback(bool success, uint8_t attErrorCode, const uint8_t* value, uint16_t length);
+
+public:
+  bool write(std::string& data, bool writeWithResponse = false, bool signedWrite = false);
+private:
+  static void _writeCallback(bool success, uint8_t attErrorCode, void* obj);
+  void writeCallback(bool success, uint8_t attErrorCode);
+
+private:
+  GattCharacteristic(bt_gatt_client* client, gatt_db_attribute* attr, uint16_t m_handle, uint16_t m_valueHandle, uint8_t m_properties, bt_uuid_t m_uuid);
 
   static void _createDescriptor(gatt_db_attribute* attr, void* obj);
   void createDescriptor(gatt_db_attribute* attr);
 
+
+  bt_gatt_client* m_client;
   gatt_db_attribute* m_attribute;
   uint16_t m_handle;
   uint16_t m_valueHandle;

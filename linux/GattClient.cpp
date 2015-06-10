@@ -205,7 +205,7 @@ void GattClient::onReady(bool success, uint8_t attErrorCode) {
     gatt_db_foreach_service(m_db, NULL, &GattClient::_createService, this);
   }
 
-  onServicesDiscovered();
+  onServicesDiscovered(success, attErrorCode);
 }
 
 void GattClient::_onServiceChanged(uint16_t startHandle, uint16_t endHandle, void* obj) {
@@ -221,7 +221,7 @@ void GattClient::_createService(gatt_db_attribute* attr, void* obj) {
 }
 
 void GattClient::createService(gatt_db_attribute* attr) {
-  GattService* service = GattService::create(attr);
+  GattService* service = GattService::create(m_client, attr);
 
   if (service) {
     m_services.push_back(service);

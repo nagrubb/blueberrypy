@@ -268,6 +268,14 @@ struct GattCharacteristic {
     return list;
   }
 
+  bool read() {
+    return m_characteristic->read();
+  }
+
+  bool write(std::string& data, bool writeWithResponse = false, bool signedWrite = false) {
+    return m_characteristic->write(data, writeWithResponse, signedWrite);
+  }
+
   bluez::native::GattCharacteristic* m_characteristic;
 };
 
@@ -322,10 +330,10 @@ struct GattClient : bluez::native::GattClient {
 
   ~GattClient() {}
 
-  virtual void onServicesDiscovered() {
+  virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
-    call_method<void>(m_pyCallback, "onServicesDiscovered");
+    call_method<void>(m_pyCallback, "onServicesDiscovered", success, attErrorCode);
     PyGILState_Release(gstate);
   }
 

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace bluez::native;
 
-GattCharacteristic* GattCharacteristic::create(gatt_db_attribute* attr) {
+GattCharacteristic* GattCharacteristic::create(bt_gatt_client* client, gatt_db_attribute* attr) {
   uint16_t handle;
   uint16_t valueHandle;
   uint8_t properties;
@@ -15,7 +15,7 @@ GattCharacteristic* GattCharacteristic::create(gatt_db_attribute* attr) {
     return NULL;
   }
 
-  return new GattCharacteristic(attr, handle, valueHandle, properties, uuid);
+  return new GattCharacteristic(client, attr, handle, valueHandle, properties, uuid);
 }
 
 GattCharacteristic::~GattCharacteristic() {
@@ -26,7 +26,8 @@ GattCharacteristic::~GattCharacteristic() {
   m_descriptors.clear();
 }
 
-GattCharacteristic::GattCharacteristic(gatt_db_attribute* attr, uint16_t handle, uint16_t valueHandle, uint8_t properties, bt_uuid_t uuid) :
+GattCharacteristic::GattCharacteristic(bt_gatt_client* client, gatt_db_attribute* attr, uint16_t handle, uint16_t valueHandle, uint8_t properties, bt_uuid_t uuid) :
+  m_client(client),
   m_attribute(attr),
   m_handle(handle),
   m_valueHandle(valueHandle),
@@ -50,6 +51,42 @@ uint8_t GattCharacteristic::getProperties() {
 
 std::string GattCharacteristic::getUuid() {
   return uuidToString(&m_uuid);
+}
+
+bool GattCharacteristic::read() {
+  int id = bt_gatt_client_read_value(m_client, m_valueHandle, &GattCharacteristic::_readCallback, this, NULL);
+  return (id != 0);
+}
+
+void GattCharacteristic::_readCallback(bool success, uint8_t attErrorCode, const uint8_t* value, uint16_t length, void* obj) {
+  GattCharacteristic* characteristic = static_cast<GattCharacteristic*>(obj);
+  characteristic->readCallback(success, attErrorCode, value, length);
+}
+
+void GattCharacteristic::readCallback(bool success, uint8_t attErrorCode, const uint8_t* value, uint16_t length) {
+  cout << "readCallback" << endl;
+}
+
+bool GattCharacteristic::write(std::string& data, bool writeWithResponse, bool signedWrite) {
+  const uint8_t* value = reinterpret_cast<const uint8_t*>(data.c_str());
+  int id = 0;
+
+  if (writeWithResponse) {
+    id = bt_gatt_client_write_value(m_client, m_valueHandle, value, data.length(), &GattCharacteristic::_writeCallback, this, NULL);
+  } else {
+    id = bt_gatt_client_write_without_response(m_client, m_valueHandle, signedWrite, value, data.length());
+  }
+
+  return (id != 0);
+}
+
+void GattCharacteristic::_writeCallback(bool success, uint8_t attErrorCode, void* obj) {
+  GattCharacteristic* characteristic = static_cast<GattCharacteristic*>(obj);
+  characteristic->writeCallback(success, attErrorCode);
+}
+
+void GattCharacteristic::writeCallback(bool success, uint8_t attErrorCode) {
+  cout << "writeCallback" << endl;
 }
 
 void GattCharacteristic::_createDescriptor(gatt_db_attribute* attr, void* obj) {

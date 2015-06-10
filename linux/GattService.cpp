@@ -5,7 +5,7 @@
 using namespace std;
 using namespace bluez::native;
 
-GattService* GattService::create(gatt_db_attribute* attr) {
+GattService* GattService::create(bt_gatt_client* client, gatt_db_attribute* attr) {
   uint16_t startHandle;
   uint16_t endHandle;
 	bool primary;
@@ -15,7 +15,7 @@ GattService* GattService::create(gatt_db_attribute* attr) {
 		return NULL;
   }
 
-  return new GattService(attr, startHandle, endHandle, primary, uuid);
+  return new GattService(client, attr, startHandle, endHandle, primary, uuid);
 }
 
 GattService::~GattService() {
@@ -26,8 +26,9 @@ GattService::~GattService() {
   m_characteristics.clear();
 }
 
-GattService::GattService(gatt_db_attribute* attr, uint16_t startHandle, uint16_t endHandle,
+GattService::GattService(bt_gatt_client* client, gatt_db_attribute* attr, uint16_t startHandle, uint16_t endHandle,
  bool primary, bt_uuid_t uuid) :
+  m_client(client),
   m_attribute(attr),
   m_startHandle(startHandle),
   m_endHandle(endHandle),
@@ -59,7 +60,7 @@ void GattService::_createCharacteristic(gatt_db_attribute* attr, void* obj) {
 }
 
 void GattService::createCharacteristic(gatt_db_attribute* attr) {
-  GattCharacteristic* characteristic = GattCharacteristic::create(attr);
+  GattCharacteristic* characteristic = GattCharacteristic::create(m_client, attr);
 
   if (characteristic) {
     m_characteristics.push_back(characteristic);

@@ -21,7 +21,7 @@ public:
   GattClient(std::string btAddress);
   virtual ~GattClient();
 
-  virtual void onServicesDiscovered() {}
+  virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {}
 
   bool connect();
   bool disconnect();

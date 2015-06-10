@@ -55,7 +55,9 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .add_property("valueHandle", &GattCharacteristic::getValueHandle)
     .add_property("properties", &GattCharacteristic::getProperties)
     .add_property("uuid", &GattCharacteristic::getUuid)
-    .add_property("descriptors", &GattCharacteristic::getDescriptors);
+    .add_property("descriptors", &GattCharacteristic::getDescriptors)
+    .def("read", &GattCharacteristic::read)
+    .def("write", &GattCharacteristic::write);
 
   class_<GattDescriptor>("GattDescriptor")
     .add_property("handle", &GattDescriptor::getHandle)
