@@ -102,7 +102,7 @@ void GattCharacteristic::_writeCallback(bool success, uint8_t attErrorCode, void
 
 void GattCharacteristic::writeCallback(bool success, uint8_t attErrorCode) {
   if (m_callback) {
-    m_callback->onWriteResponse();
+    m_callback->onWriteResponse(success, attErrorCode);
   }
 }
 

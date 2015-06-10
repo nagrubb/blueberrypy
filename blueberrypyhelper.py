@@ -8,11 +8,15 @@ class GattCharacteristic:
   def read(self):
     return self.char.read()
 
+  def write(self, data, writeWithResponse = False, signedWrite = False):
+    print 'here3'
+    return self.char.write(data, writeWithResponse, signedWrite)
+
   def onReadResponse(self, success, attErrorCode, value):
     pass;
 
-  def onWriteResponse(self):
-    print 'GattCharacteristic.onWriteResponse'
+  def onWriteResponse(self, success, attErrorCode):
+    print 'GattCharacteristic.onReadResponse({0}, {1})'.format(success, attErrorCode)
 
 class GattClient(object):
   def __init__(self, address):

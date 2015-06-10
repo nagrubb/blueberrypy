@@ -304,7 +304,8 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
     return m_characteristic->read();
   }
 
-  bool write(std::string& data, bool writeWithResponse = false, bool signedWrite = false) {
+  bool write(std::string data, bool writeWithResponse = false, bool signedWrite = false) {
+    std::cout << "write() called!" << std::endl;
     return m_characteristic->write(data, writeWithResponse, signedWrite);
   }
 
@@ -316,11 +317,11 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
     PyGILState_Release(gstate);
   }
 
-  virtual void onWriteResponse() {
+  virtual void onWriteResponse(bool success, uint8_t attErrorCode) {
     std::cout << "onWriteResponse" << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
-    call_method<void>(m_pyCallback, "onWriteResponse");
+    call_method<void>(m_pyCallback, "onWriteResponse", success, (AttErrorCode)attErrorCode);
     PyGILState_Release(gstate);
   }
   /* IGattCharacteristicCallback Interface End */
