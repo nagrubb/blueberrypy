@@ -1,5 +1,29 @@
 import blueberrypy
 
+class BtAdapter:
+  def __init__(self, id):
+    self.btAdapter = blueberrypy.BtAdapter(id, self)
+
+  def enableScanning(self):
+    return self.btAdapter.enableScanning()
+
+  def disableScanning(self):
+    return self.btAdapter.disableScanning()
+
+  def onAdvertisementScanned(self, adv):
+    pass
+
+  def printAdvertisement(self, adv):
+    print 'Bluetooth Address: {0}'.format(adv.btAddress)
+    print '  Address Type: {0}'.format(adv.addressType)
+    print '  RSSI: {0}'.format(adv.rssi)
+
+    if (adv.shortenedLocalName is not None):
+      print '  Shortened Local Name: {0}'.format(adv.shortenedLocalName)
+
+    if (adv.completeLocalName is not None):
+      print '  Complete Local Name: {0}'.format(adv.completeLocalName)
+
 class GattCharacteristic:
   def __init__(self, char):
     self.char = char
