@@ -227,16 +227,18 @@ struct GattDescriptor {
   bluez::native::GattDescriptor* m_descriptor;
 };
 
-struct GattCharacteristic {
+struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   GattCharacteristic() {
     throw;
   }
 
-  GattCharacteristic(bluez::native::GattCharacteristic* characteristic) {
-    m_characteristic = characteristic;
+  GattCharacteristic(bluez::native::GattCharacteristic* characteristic) :
+    m_characteristic(characteristic),
+    m_pyCallback(NULL) {
   }
 
   ~GattCharacteristic() {
+    //m_characteristic->unbind();
     //don't delete m_service as it doesn't belong to us. This
     //is a wrapper object that doesn't own the underlying object.
   }
@@ -268,6 +270,11 @@ struct GattCharacteristic {
     return list;
   }
 
+  void bind(PyObject* pyCallback) {
+    m_characteristic->bind(this);
+    m_pyCallback = pyCallback;
+  }
+
   bool read() {
     return m_characteristic->read();
   }
@@ -276,7 +283,26 @@ struct GattCharacteristic {
     return m_characteristic->write(data, writeWithResponse, signedWrite);
   }
 
+  /* IGattCharacteristicCallback Interface Ipmlementation */
+  virtual void onWriteResponse() {
+    std::cout << "onReadResponse" << std::endl;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onWriteResponse");
+    PyGILState_Release(gstate);
+  }
+
+  virtual void onReadResponse() {
+    std::cout << "onReadResponse" << std::endl;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onReadResponse");
+    PyGILState_Release(gstate);
+  }
+  /* IGattCharacteristicCallback Interface End */
+
   bluez::native::GattCharacteristic* m_characteristic;
+  PyObject* m_pyCallback;
 };
 
 struct GattService {

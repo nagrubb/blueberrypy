@@ -56,6 +56,7 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .add_property("properties", &GattCharacteristic::getProperties)
     .add_property("uuid", &GattCharacteristic::getUuid)
     .add_property("descriptors", &GattCharacteristic::getDescriptors)
+    .def("bind", &GattCharacteristic::bind)
     .def("read", &GattCharacteristic::read)
     .def("write", &GattCharacteristic::write);
 

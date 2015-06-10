@@ -13,6 +13,12 @@ extern "C" {
 
 namespace bluez {
 namespace native {
+class IGattCharacteristicCallback {
+public:
+  virtual void onWriteResponse() = 0;
+  virtual void onReadResponse() = 0;
+};
+
 class GattCharacteristic {
 private:
   typedef std::list<GattDescriptor*> DescriptorCollection;
@@ -25,6 +31,9 @@ public:
   uint16_t getValueHandle();
   uint8_t getProperties();
   std::string getUuid();
+
+  void bind(IGattCharacteristicCallback* callback);
+  void unbind();
 
   typedef DescriptorCollection::const_iterator DescriptorIterator;
   DescriptorIterator DescriptorCollectionBegin() const { return m_descriptors.begin(); }
@@ -56,6 +65,7 @@ private:
   uint8_t m_properties;
   bt_uuid_t m_uuid;
   DescriptorCollection m_descriptors;
+  IGattCharacteristicCallback* m_callback;
 };
 } //native
 } //bluez
