@@ -11,12 +11,6 @@ include_directories(bluez)
 include_directories(bluez/lib)
 include_directories(bluez/src/shared)
 
-#find_package(PkgConfig)
-#pkg_check_modules(GLIB2 REQUIRED glib-2.0)
-#message("GLIB2_LDFLAGS= ${GLIB2_LDFLAGS}")
-#add_definitions(${GLIB2_CFLAGS} ${GLIB2_CFLAGS_OTHER})
-#set(CMAKE_SHARED_LINKER_FLAGS ${GLIB2_LDFLAGS})
-
 add_library(blueznative SHARED
   ${Bluez_LIB}/uuid.c
   ${Bluez_SHARED}/gatt-client.c
@@ -49,7 +43,6 @@ add_library(blueznative SHARED
   linux/GattDescriptor.cpp
 )
 target_link_libraries(blueznative bluetooth)
-target_link_libraries(blueznative ${GLIB_PKG_LIBRARIES})
 
 find_package(PythonInterp)
 find_package(PythonLibs)
