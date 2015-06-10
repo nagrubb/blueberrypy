@@ -79,7 +79,9 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .def("bind", &GattCharacteristic::bind)
     .def("unbind", &GattCharacteristic::unbind)
     .def("read", &GattCharacteristic::read)
-    .def("write", &GattCharacteristic::write);
+    .def("write", &GattCharacteristic::write)
+    .def("registerNotify", &GattCharacteristic::registerNotify)
+    .def("unregisterNotify", &GattCharacteristic::unregisterNotify);
 
   class_<GattDescriptor>("GattDescriptor")
     .add_property("handle", &GattDescriptor::getHandle)

@@ -5,34 +5,18 @@ import time
 import threading
 from blueberrypyhelper import GattClient, GattCharacteristic
 
-class AdmGattCommand(GattCharacteristic):
-  def __init__(self, char):
-    GattCharacteristic.__init__(self, char)
-
-  def onReadResponse(self, success, attErrorCode, value):
-    print 'AdmGattCommand.onReadResponse({0}, {1}, {2})'.format(success, attErrorCode, value)
-
-  def onWriteResponse(self, success, attErrorCode):
-    print 'AdmGattCommand.onReadResponse({0}, {1})'.format(success, attErrorCode)
-
-class AdmGattClient(GattClient):
+class ExampleClient(GattClient):
   def __init__(self, address, event):
     GattClient.__init__(self, address)
     self.event = event
-    self.commandChar = None
-    self.responseChar = None
-    self.notifyChar = None
+    self.charOne = None
+    self.charTwo = None
+    self.charThree = None
 
   def onServicesDiscovered(self, success, attErrorCode):
     print 'onServicesDiscovered({0}, {1})'.format(success, attErrorCode);
     if success:
-      self.commandChar = AdmGattCommand(self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e1'))
-      self.responseChar = self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e2')
-      self.notifyChar = self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e3')
-      print 'here1'
-      self.commandChar.write('\x00', True)
-      print 'here2'
-
+      self.printDatabase()
     event.set()
 
 sys.stdout.write('Connecting Gatt Client...')

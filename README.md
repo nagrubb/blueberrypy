@@ -15,8 +15,8 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Exposing characteristics with python bindings (Done)
 - Read (under ATT_MTU) characteristic with python bindings (Done)
 - Write (under ATT_MTU) characteristic with python bindings (Done)
-- Notifty characteristic with python bindings
-- Indicate characteristic with python bindings
+- Notifty characteristic with python bindings (Done)
+- Indicate characteristic with python bindings (Done)
 - Create Python script to make bindings easier to use (Done)
 - Make python module (Not sure how to do this)
 - Fragemented read (> ATT_MTU)

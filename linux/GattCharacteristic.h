@@ -17,6 +17,8 @@ class IGattCharacteristicCallback {
 public:
   virtual void onReadResponse(bool success, uint8_t attErrorCode, std::string value) = 0;
   virtual void onWriteResponse(bool success, uint8_t attErrorCode) = 0;
+  virtual void onRegistration(uint16_t attErrorCode) = 0;
+  virtual void onNotification(std::string value) = 0;
 };
 
 class GattCharacteristic {
@@ -51,6 +53,16 @@ private:
   static void _writeCallback(bool success, uint8_t attErrorCode, void* obj);
   void writeCallback(bool success, uint8_t attErrorCode);
 
+public:
+  bool registerNotify();
+  bool unregisterNotify();
+
+private:
+  static void _registerCallback(uint16_t attErrorCode, void* obj);
+  void registerCallback(uint16_t attErrorCode);
+  static void _notifyCallback(uint16_t valueHandle, const uint8_t* value, uint16_t length, void* obj);
+  void notifyCallback(uint16_t valueHandle, const uint8_t* value, uint16_t length);
+
 private:
   GattCharacteristic(bt_gatt_client* client, gatt_db_attribute* attr, uint16_t m_handle, uint16_t m_valueHandle, uint8_t m_properties, bt_uuid_t m_uuid);
 
@@ -66,6 +78,7 @@ private:
   bt_uuid_t m_uuid;
   DescriptorCollection m_descriptors;
   IGattCharacteristicCallback* m_callback;
+  unsigned int m_notifyId;
 };
 } //native
 } //bluez
