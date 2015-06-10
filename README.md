@@ -13,13 +13,15 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Enumeration of descriptors (Done)
 - Exposing services with python bindings (Done)
 - Exposing characteristics with python bindings (Done)
-- Read (under ATT_MTU) characteristic with python bindings (Done, but not fully tested)
+- Read (under ATT_MTU) characteristic with python bindings (Done)
 - Write (under ATT_MTU) characteristic with python bindings (In progress)
 - Notifty characteristic with python bindings
 - Indicate characteristic with python bindings
-- Create Python module to make native bindings easier to use (In progress)
+- Create Python script to make bindings easier to use (Done)
+- Make python module (Not sure how to do this)
 - Fragemented read (> ATT_MTU)
 - Fragemented write (> ATT_MTU)
+- Statically link native library so everything is in one shared object 
 
 Issues
  - Read advertisment thread never exits (fixed)

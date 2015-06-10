@@ -65,7 +65,7 @@ target_link_libraries(blueberrypy
   ${PYTHON_LIBRARIES}
 )
 
-file(COPY GattClient.py DESTINATION .)
+file(COPY blueberrypyhelper.py DESTINATION .)
 file(COPY scanner.py DESTINATION .)
 file(COPY client.py DESTINATION .)
 file(COPY adm.py DESTINATION .)

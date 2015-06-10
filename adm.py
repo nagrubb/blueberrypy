@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
+import sys
 import time
 import threading
-from GattClient import GattClient, GattCharacteristic, AttErrorCode
+from blueberrypyhelper import GattClient, GattCharacteristic
 
 class AdmGattCommand(GattCharacteristic):
   def __init__(self, char):
@@ -23,24 +24,16 @@ class AdmGattClient(GattClient):
     self.notifyChar = None
 
   def onServicesDiscovered(self, success, attErrorCode):
-    print 'onServicesDiscovered({0})'.format(success);
+    print 'onServicesDiscovered({0}, {1})'.format(success, attErrorCode);
     if success:
       self.commandChar = AdmGattCommand(self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e1'))
       self.responseChar = self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e2')
       self.notifyChar = self.getCharacteristicByUuid('9ec5d2b8-8f51-4dea-9cd3-f3dea220b5e3')
-
       self.commandChar.read()
-      print self.commandChar
-      print self.responseChar
-      print self.notifyChar
 
     event.set()
 
-print (AttErrorCode.Red)
-print type(AttErrorCode.Red)
-print (AttErrorCode.Red.name)
-
-print 'Connecting Gatt Client...'
+sys.stdout.write('Connecting Gatt Client...')
 event = threading.Event()
 client = AdmGattClient('CA:17:34:15:52:0B', event)
 if client.connect():

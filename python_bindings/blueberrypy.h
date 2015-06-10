@@ -310,7 +310,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
 
   /* IGattCharacteristicCallback Interface Ipmlementation */
   virtual void onReadResponse(bool success, uint8_t attErrorCode, std::string value) {
-    std::cout << "onReadResponse" << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onReadResponse", success, (AttErrorCode) attErrorCode, value);
@@ -318,7 +317,7 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   virtual void onWriteResponse() {
-    std::cout << "onReadResponse" << std::endl;
+    std::cout << "onWriteResponse" << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onWriteResponse");

@@ -3,7 +3,6 @@ import blueberrypy
 class GattCharacteristic:
   def __init__(self, char):
     self.char = char
-    print char
     char.bind(self)
 
   def read(self):
