@@ -4,6 +4,7 @@ This is still under development. Check back in a week or two.
 
 This project was created/started due to a lack of good Bluetooth Low Energy support out there for Python. There's really good support for NodeJS and GoLang, but for python there's just a whole bunch of libraries and none of them seem to be complete with Bluetooth Low Energy support. I plan on changing that with this library (blueberrypy). The features I plan to support in the first phase (week 1) are:
 
+Planned
 - Enable/disabling scanning (Done)
 - Parsing advertisement data (Done)
 - Python callback with parsed advertisement (Done)
@@ -24,6 +25,13 @@ This project was created/started due to a lack of good Bluetooth Low Energy supp
 - Statically link native library so everything is in one shared object 
 
 Issues
- - Read advertisment thread never exits (fixed)
- - Mainloop thread never exits
- - Expose ATT errors up to python (fixed)
+- Read advertisment thread never exits (fixed)
+- Mainloop thread never exits
+- Expose ATT errors up to python (fixed)
+
+Not currently planned to implement
+- Reading descriptors
+- Writing descriptors
+- Dynamic database handling (service changed handling)
+- LE Security (Encryption/Authentication/Key storage)
+- Update connection parameters
