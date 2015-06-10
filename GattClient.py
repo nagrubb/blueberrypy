@@ -5,17 +5,15 @@ class GattCharacteristic:
     self.char = char
     print char
     char.bind(self)
-    print 'binded'
 
   def read(self):
-      print 'starting read...'
-      return self.char.read()
+    return self.char.read()
 
-  def onReadResponse(self):
-    print 'GattCharacteristic.onReadResponse'
+  def onReadResponse(self, success, attErrorCode, value):
+    pass;
 
   def onWriteResponse(self):
-    print 'GattCharacteristic.onReadResponse'
+    print 'GattCharacteristic.onWriteResponse'
 
 class GattClient(object):
   def __init__(self, address):

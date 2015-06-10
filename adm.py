@@ -2,17 +2,17 @@
 
 import time
 import threading
-from GattClient import GattClient, GattCharacteristic
+from GattClient import GattClient, GattCharacteristic, AttErrorCode
 
 class AdmGattCommand(GattCharacteristic):
   def __init__(self, char):
     GattCharacteristic.__init__(self, char)
 
-  def onReadResponse(self):
-    print 'AdmCommand.onReadResponse'
+  def onReadResponse(self, success, attErrorCode, value):
+    print 'AdmCommand.onReadResponse({0}, {1}, {2})'.format(success, attErrorCode, value)
 
   def onWriteResponse(self):
-    print 'AdmCommand.onReadResponse'
+    print 'AdmCommand.onWriteResponse'
 
 class AdmGattClient(GattClient):
   def __init__(self, address, event):
@@ -36,6 +36,10 @@ class AdmGattClient(GattClient):
 
     event.set()
 
+print (AttErrorCode.Red)
+print type(AttErrorCode.Red)
+print (AttErrorCode.Red.name)
+
 print 'Connecting Gatt Client...'
 event = threading.Event()
 client = AdmGattClient('CA:17:34:15:52:0B', event)
@@ -43,7 +47,6 @@ if client.connect():
   print 'Connected'
   event.wait()
   time.sleep(3)
-  print 'Done'
   client.disconnect()
 else:
   print 'Failed to connect'

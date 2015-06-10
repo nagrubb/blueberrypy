@@ -2,6 +2,26 @@
 
 BOOST_PYTHON_MODULE(blueberrypy)
 {
+  enum_<AttErrorCode>("AttErrorCode")
+    .value("NoError", AttErrorCode::NoError)
+    .value("InvalidHandle", AttErrorCode::InvalidHandle)
+    .value("ReadNotPermitted", AttErrorCode::ReadNotPermitted)
+    .value("WriteNotPermitted", AttErrorCode::WriteNotPermitted)
+    .value("InvalidPdu", AttErrorCode::InvalidPdu)
+    .value("Authentication", AttErrorCode::Authentication)
+    .value("RequestNotSupported", AttErrorCode::RequestNotSupported)
+    .value("InvalidOffset", AttErrorCode::InvalidOffset)
+    .value("Authorization", AttErrorCode::Authorization)
+    .value("PrepareQueueFull", AttErrorCode::PrepareQueueFull)
+    .value("AttributeNotFound", AttErrorCode::AttributeNotFound)
+    .value("AttributeNotLong", AttErrorCode::AttributeNotLong)
+    .value("InsufficientEncryptionKeySize", AttErrorCode::InsufficientEncryptionKeySize)
+    .value("InvalidAttributeValueLength", AttErrorCode::InvalidAttributeValueLength)
+    .value("Unlikely", AttErrorCode::Unlikely)
+    .value("InsufficientEncryption", AttErrorCode::InsufficientEncryption)
+    .value("UnsupportedGroupType", AttErrorCode::UnsupportedGroupType)
+    .value("InsufficientResources", AttErrorCode::InsufficientResources);
+
   class_<BtAdapter>("BtAdapter", init<int, PyObject*>())
     .def("enableScanning", &BtAdapter::enableScanning)
     .def("disableScanning", &BtAdapter::disableScanning);
@@ -57,6 +77,7 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .add_property("uuid", &GattCharacteristic::getUuid)
     .add_property("descriptors", &GattCharacteristic::getDescriptors)
     .def("bind", &GattCharacteristic::bind)
+    .def("unbind", &GattCharacteristic::unbind)
     .def("read", &GattCharacteristic::read)
     .def("write", &GattCharacteristic::write);
 

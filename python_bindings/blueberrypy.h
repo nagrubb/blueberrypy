@@ -8,6 +8,27 @@
 
 using namespace boost::python;
 
+enum class AttErrorCode : uint8_t {
+  NoError = 0x00,
+  InvalidHandle = 0x01,
+  ReadNotPermitted = 0x02,
+  WriteNotPermitted = 0x03,
+  InvalidPdu = 0x04,
+  Authentication = 0x05,
+  RequestNotSupported = 0x06,
+  InvalidOffset = 0x07,
+  Authorization = 0x08,
+  PrepareQueueFull = 0x09,
+  AttributeNotFound = 0x0A,
+  AttributeNotLong = 0x0B,
+  InsufficientEncryptionKeySize = 0x0C,
+  InvalidAttributeValueLength = 0x0D,
+  Unlikely = 0x0E,
+  InsufficientEncryption = 0x0F,
+  UnsupportedGroupType = 0x10,
+  InsufficientResources = 0x11
+};
+
 struct BleAdvertisement {
   BleAdvertisement() {
     throw;
@@ -238,7 +259,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   ~GattCharacteristic() {
-    //m_characteristic->unbind();
     //don't delete m_service as it doesn't belong to us. This
     //is a wrapper object that doesn't own the underlying object.
   }
@@ -275,6 +295,11 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
     m_pyCallback = pyCallback;
   }
 
+  void unbind() {
+    m_characteristic->unbind();
+    m_pyCallback = NULL;
+  }
+
   bool read() {
     return m_characteristic->read();
   }
@@ -284,19 +309,19 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   /* IGattCharacteristicCallback Interface Ipmlementation */
+  virtual void onReadResponse(bool success, uint8_t attErrorCode, std::string value) {
+    std::cout << "onReadResponse" << std::endl;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onReadResponse", success, (AttErrorCode) attErrorCode, value);
+    PyGILState_Release(gstate);
+  }
+
   virtual void onWriteResponse() {
     std::cout << "onReadResponse" << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onWriteResponse");
-    PyGILState_Release(gstate);
-  }
-
-  virtual void onReadResponse() {
-    std::cout << "onReadResponse" << std::endl;
-    PyGILState_STATE gstate;
-    gstate = PyGILState_Ensure();
-    call_method<void>(m_pyCallback, "onReadResponse");
     PyGILState_Release(gstate);
   }
   /* IGattCharacteristicCallback Interface End */
@@ -359,7 +384,7 @@ struct GattClient : bluez::native::GattClient {
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
-    call_method<void>(m_pyCallback, "onServicesDiscovered", success, attErrorCode);
+    call_method<void>(m_pyCallback, "onServicesDiscovered", success, (AttErrorCode) attErrorCode);
     PyGILState_Release(gstate);
   }
 

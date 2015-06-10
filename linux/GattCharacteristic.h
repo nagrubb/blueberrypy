@@ -15,8 +15,8 @@ namespace bluez {
 namespace native {
 class IGattCharacteristicCallback {
 public:
+  virtual void onReadResponse(bool success, uint8_t attErrorCode, std::string value) = 0;
   virtual void onWriteResponse() = 0;
-  virtual void onReadResponse() = 0;
 };
 
 class GattCharacteristic {

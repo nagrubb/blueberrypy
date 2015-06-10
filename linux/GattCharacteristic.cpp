@@ -54,12 +54,10 @@ std::string GattCharacteristic::getUuid() {
 }
 
 void GattCharacteristic::bind(IGattCharacteristicCallback* callback) {
-  cout << "bind(" << (void*) callback  << ")" << endl;
   m_callback = callback;
 }
 
 void GattCharacteristic::unbind() {
-  cout << "unbind(" << (void*) m_callback  << ")" << endl;
   m_callback = NULL;
 }
 
@@ -74,11 +72,13 @@ void GattCharacteristic::_readCallback(bool success, uint8_t attErrorCode, const
 }
 
 void GattCharacteristic::readCallback(bool success, uint8_t attErrorCode, const uint8_t* value, uint16_t length) {
-  cout << "readCallback" << endl;
-
   if (m_callback) {
-    cout << "readCallback2" << endl;
-    m_callback->onReadResponse();
+    if (value && length > 0) {
+
+      m_callback->onReadResponse(success, attErrorCode, string(reinterpret_cast<const char*>(value), length));
+    } else {
+      m_callback->onReadResponse(success, attErrorCode, string());
+    }
   }
 }
 
