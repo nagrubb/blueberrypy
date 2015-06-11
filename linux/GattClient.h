@@ -18,7 +18,7 @@ private:
   typedef std::list<GattService*> ServiceCollection;
 
 public:
-  GattClient();
+  GattClient(uint16_t mtu = BT_ATT_MAX_LE_MTU);
   virtual ~GattClient();
 
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {}
@@ -49,6 +49,7 @@ private:
   static void _createService(gatt_db_attribute* attr, void* obj);
   void createService(gatt_db_attribute* attr);
 
+  uint16_t m_mtu;
   MainLoop& m_mainLoop;
   std::string m_btAddress;
   bool m_connected;

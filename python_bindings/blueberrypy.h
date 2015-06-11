@@ -399,6 +399,10 @@ struct GattClient : bluez::native::GattClient {
     PyEval_InitThreads();
   }
 
+  GattClient(PyObject* pyCallback, uint16_t mtu) : bluez::native::GattClient(mtu), m_pyCallback(pyCallback) {
+    PyEval_InitThreads();
+  }
+
   ~GattClient() {}
 
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {

@@ -10,7 +10,8 @@
 using namespace std;
 using namespace bluez::native;
 
-GattClient::GattClient() :
+GattClient::GattClient(uint16_t mtu) :
+  m_mtu(mtu),
   m_mainLoop(MainLoop::getInstance()),
   m_btAddress(),
   m_connected(false) {
@@ -144,8 +145,7 @@ bool GattClient::initializeAtt() {
 		return false;
 	}
 
-  uint16_t mtu = 500;
-  m_client = bt_gatt_client_new(m_db, m_att, mtu);
+  m_client = bt_gatt_client_new(m_db, m_att, m_mtu);
 	if (!m_client) {
 		fprintf(stderr, "Failed to create GATT client\n");
 		gatt_db_unref(m_db);
