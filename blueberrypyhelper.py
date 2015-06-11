@@ -42,16 +42,16 @@ class GattCharacteristic:
     return self.unregisterNotify()
 
   def onReadResponse(self, success, attErrorCode, value):
-    pass;
+    pass
 
   def onWriteResponse(self, success, attErrorCode):
-    pass;
+    pass
 
   def onRegistration(self, attErrorCode):
-    print 'onRegistration({0})'.format(attErrorCode)
+    pass
 
   def  onNotification(self, value):
-    print 'onNotification({0})'.format(value)
+    pass
 
 class GattClient(object):
   def __init__(self):
