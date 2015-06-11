@@ -107,7 +107,6 @@ void GattCharacteristic::writeCallback(bool success, uint8_t attErrorCode) {
 }
 
 bool GattCharacteristic::registerNotify() {
-  cout << __PRETTY_FUNCTION__ << endl;
   m_notifyId = bt_gatt_client_register_notify(m_client, m_valueHandle, &GattCharacteristic::_registerCallback, &GattCharacteristic::_notifyCallback, this, NULL);
   return (m_notifyId != 0);
 }
@@ -123,7 +122,6 @@ void GattCharacteristic::_registerCallback(uint16_t attErrorCode, void* obj) {
 }
 
 void GattCharacteristic::registerCallback(uint16_t attErrorCode) {
-  cout << __PRETTY_FUNCTION__ << endl;
   if (m_callback) {
     m_callback->onRegistration(attErrorCode);
   }
@@ -135,8 +133,6 @@ void GattCharacteristic::_notifyCallback(uint16_t valueHandle, const uint8_t* va
 }
 
 void GattCharacteristic::notifyCallback(uint16_t valueHandle, const uint8_t* value, uint16_t length) {
-  cout << __PRETTY_FUNCTION__ << endl;
-
   if (m_callback) {
     if (value && length > 0) {
       m_callback->onNotification(string(reinterpret_cast<const char*>(value), length));

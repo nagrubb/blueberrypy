@@ -318,7 +318,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
 
   /* IGattCharacteristicCallback Interface Ipmlementation */
   virtual void onReadResponse(bool success, uint8_t attErrorCode, std::string value) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onReadResponse", success, (AttErrorCode) attErrorCode, value);
@@ -326,7 +325,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   virtual void onWriteResponse(bool success, uint8_t attErrorCode) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onWriteResponse", success, (AttErrorCode)attErrorCode);
@@ -334,7 +332,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   virtual void onRegistration(uint16_t attErrorCode) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onRegistration", (AttErrorCode)attErrorCode);
@@ -342,7 +339,6 @@ struct GattCharacteristic : bluez::native::IGattCharacteristicCallback {
   }
 
   virtual void onNotification(std::string value) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onNotification", value);
