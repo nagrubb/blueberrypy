@@ -399,7 +399,7 @@ struct GattService {
 };
 
 struct GattClient : bluez::native::GattClient {
-  GattClient(std::string btAddress, PyObject* pyCallback) : bluez::native::GattClient(btAddress), m_pyCallback(pyCallback) {
+  GattClient(PyObject* pyCallback) : bluez::native::GattClient(), m_pyCallback(pyCallback) {
     PyEval_InitThreads();
   }
 

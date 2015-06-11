@@ -6,8 +6,8 @@ import threading
 from blueberrypyhelper import GattClient, GattCharacteristic
 
 class ExampleClient(GattClient):
-  def __init__(self, address, event):
-    GattClient.__init__(self, address)
+  def __init__(self, event):
+    GattClient.__init__(self)
     self.event = event
 
   def onServicesDiscovered(self, success, attErrorCode):
@@ -18,8 +18,8 @@ class ExampleClient(GattClient):
 
 sys.stdout.write('Connecting Gatt Client...')
 event = threading.Event()
-client = ExampleClient('CA:17:34:15:52:0B', event)
-if client.connect():
+client = ExampleClient(event)
+if client.connect('CA:17:34:15:52:0B'):
   print 'Connected'
   event.wait()
   client.disconnect()

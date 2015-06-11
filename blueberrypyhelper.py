@@ -54,8 +54,8 @@ class GattCharacteristic:
     print 'onNotification({0})'.format(value)
 
 class GattClient(object):
-  def __init__(self, address):
-    self.client = blueberrypy.GattClient(address, self)
+  def __init__(self):
+    self.client = blueberrypy.GattClient(self)
 
   def onServicesDiscovered(self, success, attErrorCode):
     pass
@@ -85,8 +85,8 @@ class GattClient(object):
 
     return None
 
-  def connect(self):
-    return self.client.connect()
+  def connect(self, address):
+    return self.client.connect(address)
 
   def disconnect(self):
     return self.client.disconnect()

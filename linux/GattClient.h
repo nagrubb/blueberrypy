@@ -18,12 +18,12 @@ private:
   typedef std::list<GattService*> ServiceCollection;
 
 public:
-  GattClient(std::string btAddress);
+  GattClient();
   virtual ~GattClient();
 
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {}
 
-  bool connect();
+  bool connect(std::string btAddress);
   bool disconnect();
 
   typedef ServiceCollection::const_iterator ServiceIterator;

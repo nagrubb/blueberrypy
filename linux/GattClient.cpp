@@ -10,9 +10,9 @@
 using namespace std;
 using namespace bluez::native;
 
-GattClient::GattClient(string btAddress) :
+GattClient::GattClient() :
   m_mainLoop(MainLoop::getInstance()),
-  m_btAddress(btAddress),
+  m_btAddress(),
   m_connected(false) {
 
   m_mainLoop.ref();
@@ -28,7 +28,7 @@ GattClient::~GattClient() {
   m_services.clear();
 }
 
-bool GattClient::connect() {
+bool GattClient::connect(std::string btAddress) {
   bdaddr_t srcAddress = {{0, 0, 0, 0, 0, 0}};
   sockaddr_l2 srcSocketAddress;
   bdaddr_t dstAddress;
@@ -37,6 +37,7 @@ bool GattClient::connect() {
   int sec = BT_SECURITY_LOW;
 	bt_security btsec;
 
+  m_btAddress = btAddress;
   if (str2ba(m_btAddress.c_str(), &dstAddress) < 0) {
     return false;
   }
