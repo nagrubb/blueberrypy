@@ -22,7 +22,7 @@ Planned
 - Make python module (Not sure how to do this)
 - Fragemented read (> ATT_MTU)
 - Fragemented write (> ATT_MTU)
-- Statically link native library so everything is in one shared object 
+- Statically link native library so everything is in one shared object (Done)
 
 Issues
 - Read advertisment thread never exits (fixed)

@@ -11,7 +11,10 @@ include_directories(bluez)
 include_directories(bluez/lib)
 include_directories(bluez/src/shared)
 
-add_library(blueznative SHARED
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC" )
+set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fPIC" )
+
+add_library(blueznative STATIC
   ${Bluez_LIB}/uuid.c
   ${Bluez_SHARED}/gatt-client.c
   ${Bluez_SHARED}/gatt-db.c
