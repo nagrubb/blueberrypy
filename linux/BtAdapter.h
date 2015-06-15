@@ -16,6 +16,7 @@ protected:
   virtual bool onAdvertisementScanned(BleAdvertisement* advertisment) { return false; }
 
 private:
+  bool setScanParameters();
   bool setScanEnable(bool enable, bool filterDuplicates);
   void processHciData();
 

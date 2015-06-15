@@ -49,6 +49,7 @@ BleAdvertisement* BleAdvertisement::parse(void* adv_info) {
 	uint8_t* data = info->data;
 	size_t dataLength = info->length;
 
+	adv->m_type = (BleAdvertisementType) info->evt_type;
 	adv->m_rssi = *(info->data + info->length);
 	adv->m_addressType = (info->bdaddr_type == LE_PUBLIC_ADDRESS) ? "public" : "random";
 

@@ -29,6 +29,14 @@ enum class AttErrorCode : uint8_t {
   InsufficientResources = 0x11
 };
 
+enum class BleAdvertisementType : uint8_t {
+	ConnectableUndirected = 0x00,
+	ConnectableDirected = 0x01,
+	ScannableUndirected = 0x02,
+	NonConnectableUndirected = 0x03,
+	ScanResponse = 0x04
+};
+
 struct BleAdvertisement {
   BleAdvertisement() {
     throw;
@@ -40,6 +48,10 @@ struct BleAdvertisement {
 
   ~BleAdvertisement() {
       delete m_advertisement;
+  }
+
+  BleAdvertisementType type() {
+    return (BleAdvertisementType) m_advertisement->type();
   }
 
   boost::python::object rssi() {

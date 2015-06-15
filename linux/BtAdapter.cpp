@@ -34,11 +34,33 @@ BtAdapter::~BtAdapter() {
 }
 
 bool BtAdapter::enableScanning() {
+  if (!setScanParameters()) {
+    return false;
+  }
+
   return setScanEnable(true, false);
 }
 
 bool BtAdapter::disableScanning() {
   return setScanEnable(false, false);
+}
+
+bool BtAdapter::setScanParameters() {
+  le_set_scan_parameters_cp scan_parameters;
+
+  memset(&scan_parameters, 0, sizeof(scan_parameters));
+  scan_parameters.type = 0x01; //active scanning
+  scan_parameters.interval = htobs(0x0012);
+  scan_parameters.window = htobs(0x0012);
+  scan_parameters.own_bdaddr_type = 0; //Public
+  scan_parameters.filter = 0; //No filter
+
+  if (hci_send_cmd(m_hci_device, OGF_LE_CTL, OCF_LE_SET_SCAN_PARAMETERS, LE_SET_SCAN_PARAMETERS_CP_SIZE, (void*) &scan_parameters) < 0) {
+    perror("hci_send_cmd(OCF_LE_SET_SCAN_ENABLE)");
+    return false;
+  }
+
+  return true;
 }
 
 bool BtAdapter::setScanEnable(bool enable, bool filterDuplicates) {
@@ -92,7 +114,7 @@ void BtAdapter::processHciData() {
   		le_meta_event = (evt_le_meta_event *)(hci_event_buf + (1 + HCI_EVENT_HDR_SIZE));
   		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
 
-  		if (le_meta_event->subevent != 0x02) {
+  		if (le_meta_event->subevent != EVT_LE_ADVERTISING_REPORT) {
   			continue;
   		}
 

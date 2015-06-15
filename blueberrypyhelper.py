@@ -14,6 +14,7 @@ class BtAdapter:
     pass
 
   def printAdvertisement(self, adv):
+    print 'Type: {0}'.format(adv.type)
     print 'Bluetooth Address: {0}'.format(adv.btAddress)
     print '  Address Type: {0}'.format(adv.addressType)
     print '  RSSI: {0}'.format(adv.rssi)

@@ -5,11 +5,20 @@
 
 namespace bluez {
 namespace native {
+enum class BleAdvertisementType : uint8_t {
+	ConnectableUndirected = 0x00,
+	ConnectableDirected = 0x01,
+	ScannableUndirected = 0x02,
+	NonConnectableUndirected = 0x03,
+	ScanResponse = 0x04
+};
+
 class BleAdvertisement {
 public:
   static BleAdvertisement* parse(void* adv_info);
   virtual ~BleAdvertisement() {}
 
+  BleAdvertisementType type() { return m_type; }
   uint8_t rssi() { return m_rssi; }
   std::string addressType() { return m_addressType; }
   std::string btAddress() { return m_btAddress; }
@@ -76,6 +85,7 @@ private:
     return false;
   }
 
+  BleAdvertisementType m_type;
   uint8_t m_rssi;
   std::string m_addressType;
   std::string m_btAddress;

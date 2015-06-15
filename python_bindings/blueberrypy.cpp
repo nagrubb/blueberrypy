@@ -22,11 +22,19 @@ BOOST_PYTHON_MODULE(blueberrypy)
     .value("UnsupportedGroupType", AttErrorCode::UnsupportedGroupType)
     .value("InsufficientResources", AttErrorCode::InsufficientResources);
 
+  enum_<BleAdvertisementType>("BleAdvertisementType")
+    .value("ConnectableUndirected", BleAdvertisementType::ConnectableUndirected)
+    .value("ConnectableDirected", BleAdvertisementType::ConnectableDirected)
+    .value("ScannableUndirected", BleAdvertisementType::ScannableUndirected)
+    .value("NonConnectableUndirected", BleAdvertisementType::NonConnectableUndirected)
+    .value("ScanResponse", BleAdvertisementType::ScanResponse);
+
   class_<BtAdapter>("BtAdapter", init<int, PyObject*>())
     .def("enableScanning", &BtAdapter::enableScanning)
     .def("disableScanning", &BtAdapter::disableScanning);
 
   class_<BleAdvertisement>("BleAdvertisement")
+    .add_property("type", &BleAdvertisement::type)
     .add_property("rssi", &BleAdvertisement::rssi)
     .add_property("addressType", &BleAdvertisement::addressType)
     .add_property("btAddress", &BleAdvertisement::btAddress)
