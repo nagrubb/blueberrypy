@@ -58,6 +58,12 @@ class GattClient(object):
   def __init__(self):
     self.client = blueberrypy.GattClient(self)
 
+  def onMtuExchanged(self, mtu):
+    print 'onMtuExchanged({})'.format(mtu)
+
+  def onDebugMessage(self, msg):
+    print 'onDebugMessage({})'.format(msg)
+
   def onServicesDiscovered(self, success, attErrorCode):
     pass
 

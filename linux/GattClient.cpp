@@ -158,6 +158,7 @@ bool GattClient::initializeAtt() {
 
 	gatt_db_register(m_db, &GattClient::_onServiceAdded, &GattClient::_onServiceRemoved, this, NULL);
 
+	bt_gatt_client_set_mtu_exchanged_handler(m_client, &GattClient::_onMtuExchanged, this, NULL);
 	bt_gatt_client_set_ready_handler(m_client, &GattClient::_onReady, this, NULL);
 	bt_gatt_client_set_service_changed(m_client, &GattClient::_onServiceChanged, this, NULL);
 
@@ -179,8 +180,6 @@ void GattClient::_onDebugMessage(const char* str, void* obj) {
   client->onDebugMessage(str);
 }
 
-void GattClient::onDebugMessage(const char* str) {}
-
 void GattClient::_onServiceAdded(gatt_db_attribute *attr, void* obj) {
   GattClient* client = static_cast<GattClient*>(obj);
   client->onServiceAdded(attr);
@@ -194,6 +193,15 @@ void GattClient::_onServiceRemoved(gatt_db_attribute *attr, void* obj) {
 }
 
 void GattClient::onServiceRemoved(gatt_db_attribute *attr) {}
+
+void GattClient::_onMtuExchanged(bool success, uint8_t attErrorCode, void* obj) {
+	GattClient* client = static_cast<GattClient*>(obj);
+	client->onMtuExchanged(success, attErrorCode);
+}
+
+void GattClient::onMtuExchanged(bool success, uint8_t attErrorCode) {
+	onMtuExchanged(success, attErrorCode, bt_att_get_mtu(m_att));
+}
 
 void GattClient::_onReady(bool success, uint8_t attErrorCode, void* obj) {
   GattClient* client = static_cast<GattClient*>(obj);

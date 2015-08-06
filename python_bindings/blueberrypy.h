@@ -417,6 +417,20 @@ struct GattClient : bluez::native::GattClient {
 
   ~GattClient() {}
 
+  virtual void onDebugMessage(const char* str) {
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onDebugMessage", str);
+    PyGILState_Release(gstate);
+  }
+
+	virtual void onMtuExchanged(bool success, uint8_t attErrorCode, uint16_t mtu) {
+		PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    call_method<void>(m_pyCallback, "onMtuExchanged", mtu);
+    PyGILState_Release(gstate);
+	}
+
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
