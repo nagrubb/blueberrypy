@@ -229,6 +229,7 @@ struct BtAdapter : public bluez::native::BtAdapter {
   		gstate = PyGILState_Ensure();
   		call_method<void>(m_pyCallback, "onAdvertisementScanned", wrapper);
       PyGILState_Release(gstate);
+			//delete wrapper;
       return true;
     }
 

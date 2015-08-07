@@ -36,6 +36,7 @@ public:
 private:
   bool initializeAtt();
   void onDisconnected(int err);
+	void cleanup();
 
   static void _onDisconnected(int err, void* obj);
   static void _onDebugMessage(const char* str, void* obj);
