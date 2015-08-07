@@ -82,44 +82,44 @@ void BtAdapter::processHciData() {
   evt_le_meta_event *le_meta_event = NULL;
   le_advertising_info *adv_info = NULL;
   unsigned char hci_event_buf[HCI_MAX_EVENT_SIZE];
-	hci_filter filter;
+  hci_filter filter;
   fd_set rfds;
   timeval tv;
   int select_ret;
 
-	// setup HCI filter
-	hci_filter_clear(&filter);
-	hci_filter_set_ptype(HCI_EVENT_PKT, &filter);
-	hci_filter_set_event(EVT_LE_META_EVENT, &filter);
-	setsockopt(m_hci_device, SOL_HCI, HCI_FILTER, &filter, sizeof(filter));
+  // setup HCI filter
+  hci_filter_clear(&filter);
+  hci_filter_set_ptype(HCI_EVENT_PKT, &filter);
+  hci_filter_set_event(EVT_LE_META_EVENT, &filter);
+  setsockopt(m_hci_device, SOL_HCI, HCI_FILTER, &filter, sizeof(filter));
 
-	while(m_active) {
+  while(m_active) {
 
-		FD_ZERO(&rfds);
-		FD_SET(m_hci_device, &rfds);
+    FD_ZERO(&rfds);
+    FD_SET(m_hci_device, &rfds);
 
-		tv.tv_sec = 1;
-		tv.tv_usec = 0;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
 
     select_ret = select(m_hci_device + 1, &rfds, NULL, NULL, &tv);
 
-		if (select_ret == -1) {
-			continue;
-		}
+    if (select_ret == -1) {
+      continue;
+    }
 
     if (select_ret) {
-  		// read HCI event
-  		hci_event_len = read(m_hci_device, hci_event_buf, sizeof(hci_event_buf));
+      // read HCI event
+      hci_event_len = read(m_hci_device, hci_event_buf, sizeof(hci_event_buf));
 
-  		le_meta_event = (evt_le_meta_event *)(hci_event_buf + (1 + HCI_EVENT_HDR_SIZE));
-  		hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
+      le_meta_event = (evt_le_meta_event *)(hci_event_buf + (1 + HCI_EVENT_HDR_SIZE));
+      hci_event_len -= (1 + HCI_EVENT_HDR_SIZE);
 
-  		if (le_meta_event->subevent != EVT_LE_ADVERTISING_REPORT) {
-  			continue;
-  		}
+      if (le_meta_event->subevent != EVT_LE_ADVERTISING_REPORT) {
+        continue;
+      }
 
-  		adv_info = (le_advertising_info *)(le_meta_event->data + 1);
-  		BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info);
+      adv_info = (le_advertising_info *)(le_meta_event->data + 1);
+      BleAdvertisement* advertisment = BleAdvertisement::parse(adv_info);
       if (!onAdvertisementScanned(advertisment)) {
         delete advertisment;
       }

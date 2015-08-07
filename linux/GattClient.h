@@ -22,8 +22,8 @@ public:
   GattClient(uint16_t mtu = BT_ATT_MAX_LE_MTU);
   virtual ~GattClient();
 
-	virtual void onDebugMessage(const char* str) {}
-	virtual void onMtuExchanged(bool success, uint8_t attErrorCode, uint16_t mtu) {}
+  virtual void onDebugMessage(const char* str) {}
+  virtual void onMtuExchanged(bool success, uint8_t attErrorCode, uint16_t mtu) {}
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {}
 
   bool connect(std::string btAddress);
@@ -36,7 +36,7 @@ public:
 private:
   bool initializeAtt();
   void onDisconnected(int err);
-	void cleanup();
+  void cleanup();
 
   static void _onDisconnected(int err, void* obj);
   static void _onDebugMessage(const char* str, void* obj);
@@ -44,9 +44,9 @@ private:
   void onServiceAdded(gatt_db_attribute* attr);
   static void _onServiceRemoved(gatt_db_attribute* attr, void* obj);
   void onServiceRemoved(gatt_db_attribute* attr);
-	static void _onMtuExchanged(bool success, uint8_t attErrorCode, void* obj);
-	void onMtuExchanged(bool success, uint8_t attErrorCode);
-	static void _onReady(bool success, uint8_t attErrorCode, void* obj);
+  static void _onMtuExchanged(bool success, uint8_t attErrorCode, void* obj);
+  void onMtuExchanged(bool success, uint8_t attErrorCode);
+  static void _onReady(bool success, uint8_t attErrorCode, void* obj);
   void onReady(bool success, uint8_t attErrorCode);
   static void _onServiceChanged(uint16_t startHandle, uint16_t endHandle, void* obj);
   void onServiceChanged(uint16_t startHandle, uint16_t endHandle);

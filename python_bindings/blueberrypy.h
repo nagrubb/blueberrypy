@@ -30,11 +30,11 @@ enum class AttErrorCode : uint8_t {
 };
 
 enum class BleAdvertisementType : uint8_t {
-	ConnectableUndirected = 0x00,
-	ConnectableDirected = 0x01,
-	ScannableUndirected = 0x02,
-	NonConnectableUndirected = 0x03,
-	ScanResponse = 0x04
+  ConnectableUndirected = 0x00,
+  ConnectableDirected = 0x01,
+  ScannableUndirected = 0x02,
+  NonConnectableUndirected = 0x03,
+  ScanResponse = 0x04
 };
 
 struct BleAdvertisement {
@@ -43,11 +43,11 @@ struct BleAdvertisement {
   }
 
   BleAdvertisement(bluez::native::BleAdvertisement* advertisement) {
-      m_advertisement = advertisement;
+    m_advertisement = advertisement;
   }
 
   ~BleAdvertisement() {
-      delete m_advertisement;
+    delete m_advertisement;
   }
 
   BleAdvertisementType type() {
@@ -225,11 +225,10 @@ struct BtAdapter : public bluez::native::BtAdapter {
     virtual bool onAdvertisementScanned(bluez::native::BleAdvertisement* advertisment) {
       BleAdvertisement* wrapper = new BleAdvertisement(advertisment);
 
-  		PyGILState_STATE gstate;
-  		gstate = PyGILState_Ensure();
-  		call_method<void>(m_pyCallback, "onAdvertisementScanned", wrapper);
+      PyGILState_STATE gstate;
+      gstate = PyGILState_Ensure();
+      call_method<void>(m_pyCallback, "onAdvertisementScanned", wrapper);
       PyGILState_Release(gstate);
-			//delete wrapper;
       return true;
     }
 
@@ -425,12 +424,12 @@ struct GattClient : bluez::native::GattClient {
     PyGILState_Release(gstate);
   }
 
-	virtual void onMtuExchanged(bool success, uint8_t attErrorCode, uint16_t mtu) {
-		PyGILState_STATE gstate;
+  virtual void onMtuExchanged(bool success, uint8_t attErrorCode, uint16_t mtu) {
+    PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     call_method<void>(m_pyCallback, "onMtuExchanged", mtu);
     PyGILState_Release(gstate);
-	}
+  }
 
   virtual void onServicesDiscovered(bool success, uint8_t attErrorCode) {
     PyGILState_STATE gstate;

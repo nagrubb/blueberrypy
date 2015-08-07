@@ -19,7 +19,7 @@ GattClient::GattClient(uint16_t mtu) :
 }
 
 GattClient::~GattClient() {
-	cleanup();
+  cleanup();
   m_mainLoop.unref();
 
   for(auto i = m_services.begin(); i != m_services.end(); ++i) {
@@ -36,58 +36,58 @@ bool GattClient::connect(std::string btAddress) {
   sockaddr_l2 dstSocketAddress;
   uint8_t dst_type = BDADDR_LE_PUBLIC;
   int sec = BT_SECURITY_LOW;
-	bt_security btsec;
+  bt_security btsec;
 
   m_btAddress = btAddress;
   if (str2ba(m_btAddress.c_str(), &dstAddress) < 0) {
     return false;
   }
 
-	char srcaddr_str[18], dstaddr_str[18];
+  char srcaddr_str[18], dstaddr_str[18];
 
-	ba2str(&srcAddress, srcaddr_str);
-	ba2str(&dstAddress, dstaddr_str);
+  ba2str(&srcAddress, srcaddr_str);
+  ba2str(&dstAddress, dstaddr_str);
 
   m_socket = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
-	if (m_socket < 0) {
-		perror("socket(PF_BLUETOOTH)");
-		return false;
-	}
+  if (m_socket < 0) {
+    perror("socket(PF_BLUETOOTH)");
+    return false;
+  }
 
-	/* Set up source address */
-	memset(&srcSocketAddress, 0, sizeof(srcSocketAddress));
+  /* Set up source address */
+  memset(&srcSocketAddress, 0, sizeof(srcSocketAddress));
   srcSocketAddress.l2_family = AF_BLUETOOTH;
   srcSocketAddress.l2_cid = htobs(ATT_CID);
   srcSocketAddress.l2_bdaddr_type = 0;
-	bacpy(&srcSocketAddress.l2_bdaddr, &srcAddress);
+  bacpy(&srcSocketAddress.l2_bdaddr, &srcAddress);
 
-	if (bind(m_socket, (struct sockaddr *)&srcSocketAddress, sizeof(srcSocketAddress)) < 0) {
-		perror("bind()");
-		return false;
-	}
+  if (bind(m_socket, (struct sockaddr *)&srcSocketAddress, sizeof(srcSocketAddress)) < 0) {
+    perror("bind()");
+    return false;
+  }
 
-	/* Set the security level */
-	memset(&btsec, 0, sizeof(btsec));
-	btsec.level = sec;
-	if (setsockopt(m_socket, SOL_BLUETOOTH, BT_SECURITY, &btsec,
-							sizeof(btsec)) != 0) {
-		perror("setsockopt(SOL_BLUETOOTH, BT_SECURITY)");
+  /* Set the security level */
+  memset(&btsec, 0, sizeof(btsec));
+  btsec.level = sec;
+  if (setsockopt(m_socket, SOL_BLUETOOTH, BT_SECURITY, &btsec,
+              sizeof(btsec)) != 0) {
+    perror("setsockopt(SOL_BLUETOOTH, BT_SECURITY)");
     close(m_socket);
-		return false;
-	}
+    return false;
+  }
 
-	/* Set up destination address */
-	memset(&dstSocketAddress, 0, sizeof(dstSocketAddress));
+  /* Set up destination address */
+  memset(&dstSocketAddress, 0, sizeof(dstSocketAddress));
   dstSocketAddress.l2_family = AF_BLUETOOTH;
   dstSocketAddress.l2_cid = htobs(ATT_CID);
   dstSocketAddress.l2_bdaddr_type = dst_type;
-	bacpy(&dstSocketAddress.l2_bdaddr, &dstAddress);
+  bacpy(&dstSocketAddress.l2_bdaddr, &dstAddress);
 
-	if (::connect(m_socket, (struct sockaddr *) &dstSocketAddress, sizeof(dstSocketAddress)) < 0) {
-		perror("connect()");
-		close(m_socket);
-		return false;
-	}
+  if (::connect(m_socket, (struct sockaddr *) &dstSocketAddress, sizeof(dstSocketAddress)) < 0) {
+    perror("connect()");
+    close(m_socket);
+    return false;
+  }
 
   m_connected = true;
 
@@ -96,7 +96,7 @@ bool GattClient::connect(std::string btAddress) {
     return false;
   }
 
-	return true;
+  return true;
 }
 
 bool GattClient::disconnect() {
@@ -105,53 +105,53 @@ bool GattClient::disconnect() {
     return true;
   }
 
-	cleanup();
+  cleanup();
   return true;
 }
 
 bool GattClient::initializeAtt() {
-	m_att = bt_att_new(m_socket, false);
-	if (!m_att) {
-		fprintf(stderr, "Failed to initialze ATT transport layer\n");
-		cleanup();
-		return false;
-	}
+  m_att = bt_att_new(m_socket, false);
+  if (!m_att) {
+    fprintf(stderr, "Failed to initialze ATT transport layer\n");
+    cleanup();
+    return false;
+  }
 
-	if (!bt_att_set_close_on_unref(m_att, true)) {
-		fprintf(stderr, "Failed to set up ATT transport layer\n");
-		cleanup();
-		return false;
-	}
+  if (!bt_att_set_close_on_unref(m_att, true)) {
+    fprintf(stderr, "Failed to set up ATT transport layer\n");
+    cleanup();
+    return false;
+  }
 
-	if (!bt_att_register_disconnect(m_att, &GattClient::_onDisconnected, this, NULL)) {
-		fprintf(stderr, "Failed to set ATT disconnect handler\n");
-		cleanup();
-		return false;
-	}
+  if (!bt_att_register_disconnect(m_att, &GattClient::_onDisconnected, this, NULL)) {
+    fprintf(stderr, "Failed to set ATT disconnect handler\n");
+    cleanup();
+    return false;
+  }
 
-	m_db = gatt_db_new();
-	if (!m_db) {
-		fprintf(stderr, "Failed to create GATT database\n");
-		cleanup();
-		return false;
-	}
+  m_db = gatt_db_new();
+  if (!m_db) {
+    fprintf(stderr, "Failed to create GATT database\n");
+    cleanup();
+    return false;
+  }
 
   m_client = bt_gatt_client_new(m_db, m_att, m_mtu);
-	if (!m_client) {
-		fprintf(stderr, "Failed to create GATT client\n");
-		cleanup();
-		return false;
-	}
+  if (!m_client) {
+    fprintf(stderr, "Failed to create GATT client\n");
+    cleanup();
+    return false;
+  }
 
   bt_att_set_debug(m_att, &GattClient::_onDebugMessage, this, NULL);
-	bt_gatt_client_set_debug(m_client, &GattClient::_onDebugMessage, this, NULL);
+  bt_gatt_client_set_debug(m_client, &GattClient::_onDebugMessage, this, NULL);
 
-	gatt_db_register(m_db, &GattClient::_onServiceAdded, &GattClient::_onServiceRemoved, this, NULL);
+  gatt_db_register(m_db, &GattClient::_onServiceAdded, &GattClient::_onServiceRemoved, this, NULL);
 
-	bt_gatt_client_set_mtu_exchanged_handler(m_client, &GattClient::_onMtuExchanged, this, NULL);
-	bt_gatt_client_set_ready_handler(m_client, &GattClient::_onReady, this, NULL);
-	bt_gatt_client_set_service_changed(m_client, &GattClient::_onServiceChanged, this, NULL);
-	return true;
+  bt_gatt_client_set_mtu_exchanged_handler(m_client, &GattClient::_onMtuExchanged, this, NULL);
+  bt_gatt_client_set_ready_handler(m_client, &GattClient::_onReady, this, NULL);
+  bt_gatt_client_set_service_changed(m_client, &GattClient::_onServiceChanged, this, NULL);
+  return true;
 }
 
 void GattClient::_onDisconnected(int err, void* obj) {
@@ -160,17 +160,17 @@ void GattClient::_onDisconnected(int err, void* obj) {
 }
 
 void GattClient::cleanup() {
-	m_connected = false;
-	gatt_db_unref(m_db);
-	m_db = NULL;
-	bt_att_unref(m_att);
-	m_att = NULL;
-	bt_gatt_client_unref(m_client);
-	m_client = NULL;
+  m_connected = false;
+  gatt_db_unref(m_db);
+  m_db = NULL;
+  bt_att_unref(m_att);
+  m_att = NULL;
+  bt_gatt_client_unref(m_client);
+  m_client = NULL;
 }
 
 void GattClient::onDisconnected(int err) {
-	cleanup();
+  cleanup();
 }
 
 void GattClient::_onDebugMessage(const char* str, void* obj) {
@@ -193,12 +193,12 @@ void GattClient::_onServiceRemoved(gatt_db_attribute *attr, void* obj) {
 void GattClient::onServiceRemoved(gatt_db_attribute *attr) {}
 
 void GattClient::_onMtuExchanged(bool success, uint8_t attErrorCode, void* obj) {
-	GattClient* client = static_cast<GattClient*>(obj);
-	client->onMtuExchanged(success, attErrorCode);
+  GattClient* client = static_cast<GattClient*>(obj);
+  client->onMtuExchanged(success, attErrorCode);
 }
 
 void GattClient::onMtuExchanged(bool success, uint8_t attErrorCode) {
-	onMtuExchanged(success, attErrorCode, bt_att_get_mtu(m_att));
+  onMtuExchanged(success, attErrorCode, bt_att_get_mtu(m_att));
 }
 
 void GattClient::_onReady(bool success, uint8_t attErrorCode, void* obj) {

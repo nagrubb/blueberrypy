@@ -6,11 +6,11 @@
 namespace bluez {
 namespace native {
 enum class BleAdvertisementType : uint8_t {
-	ConnectableUndirected = 0x00,
-	ConnectableDirected = 0x01,
-	ScannableUndirected = 0x02,
-	NonConnectableUndirected = 0x03,
-	ScanResponse = 0x04
+  ConnectableUndirected = 0x00,
+  ConnectableDirected = 0x01,
+  ScannableUndirected = 0x02,
+  NonConnectableUndirected = 0x03,
+  ScanResponse = 0x04
 };
 
 class BleAdvertisement {
@@ -62,12 +62,12 @@ private:
   bool getValue(T type, std::string& value) {
     auto pair = m_parts.find((uint8_t) type);
 
-  	if (pair == m_parts.end()) {
-  		return false;
-  	}
+    if (pair == m_parts.end()) {
+      return false;
+    }
 
-  	value = pair->second;
-  	return true;
+    value = pair->second;
+    return true;
   }
 
   template<class T>
