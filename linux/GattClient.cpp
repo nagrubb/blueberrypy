@@ -14,7 +14,10 @@ GattClient::GattClient(uint16_t mtu) :
   m_mtu(mtu),
   m_mainLoop(MainLoop::getInstance()),
   m_btAddress(),
-  m_connected(false) {
+  m_connected(false),
+	m_att(NULL),
+	m_db(NULL),
+	m_client(NULL) {
   m_mainLoop.ref();
 }
 
