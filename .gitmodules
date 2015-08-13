@@ -1,3 +1,3 @@
 [submodule "bluez"]
 	path = bluez
-	url = git://git.kernel.org/pub/scm/bluetooth/bluez.git
+	url = ssh://git@stash.taservs.net:7999/got/bluez.git
