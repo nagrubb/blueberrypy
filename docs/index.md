@@ -5,7 +5,7 @@ Eventually the plan is to support Peripheral role and hopefully support OSX.
 
 After cloning this repo, you can build the python bindings and try this out:
 ```
-$ cd blueberrypy
+$ cd blueberrypy2
 $ mkdir build
 $ cd build
 $ cmake ..
